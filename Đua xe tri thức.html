@@ -1,0 +1,1160 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>StudyPlan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Bố cục: thanh trên cùng như bảng thời gian đua; trang chủ có hero kèm bản đồ đường đua; trang bài học chia hai cột (mục lục dính bên trái); trò chơi là khung dọc có bảng xếp hạng bên cạnh. */
+:root{
+  --bg:#E6E9EE; --surface:#FFFFFF; --surface-2:#F1F3F7; --ink:#14171C; --ink-2:#4F5665; --line:#CDD2DB;
+  --paint:#FFC400; --paint-ink:#14171C; --kerb:#D6342B; --kerb-w:#FFFFFF; --em-ink:#14171C; --hl:#FFC400;
+  --asphalt:#1A1D23; --asphalt-2:#272B33; --on-asphalt:#EDEFF3; --on-asphalt-2:#B4BAC6;
+  --good:#0C7A44; --good-soft:#D6F0E2; --bad:#B3261E; --bad-soft:#FADDD9;
+  --info:#1B5FCB; --info-soft:#DBE7FA; --warn:#7F5200; --warn-soft:#FCEBC2; --violet:#5B34C4; --violet-soft:#E6DEF9;
+  --shadow:0 1px 2px rgba(20,23,28,.07),0 10px 28px rgba(20,23,28,.06);
+  --f-display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1014; --surface:#171A20; --surface-2:#20242C; --ink:#EDEFF3; --ink-2:#A2A9B7; --line:#2C313B;
+  --kerb:#FF5B4F; --kerb-w:#E9EBEF; --asphalt:#1A1D23; --asphalt-2:#272B33; --em-ink:#FFC400; --hl:transparent;
+  --good:#4CD694; --good-soft:#123226; --bad:#FF8277; --bad-soft:#3D1F1C;
+  --info:#7DAEFF; --info-soft:#15284A; --warn:#F2BB4C; --warn-soft:#3A2C0E; --violet:#B79BFF; --violet-soft:#2A2050;
+  --shadow:0 0 0 rgba(0,0,0,0); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1014; --surface:#171A20; --surface-2:#20242C; --ink:#EDEFF3; --ink-2:#A2A9B7; --line:#2C313B;
+  --kerb:#FF5B4F; --kerb-w:#E9EBEF; --asphalt:#1A1D23; --asphalt-2:#272B33; --em-ink:#FFC400; --hl:transparent;
+  --good:#4CD694; --good-soft:#123226; --bad:#FF8277; --bad-soft:#3D1F1C;
+  --info:#7DAEFF; --info-soft:#15284A; --warn:#F2BB4C; --warn-soft:#3A2C0E; --violet:#B79BFF; --violet-soft:#2A2050;
+  --shadow:0 0 0 rgba(0,0,0,0); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--asphalt);z-index:60}
+h1,h2,h3,h4{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:.005em}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:4px}
+.top :focus-visible,.asphalt :focus-visible{outline-color:var(--paint)}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.muted{color:var(--ink-2)} .small{font-size:14px} .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:700 13px/1.2 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*,.grid>*{min-width:0}
+.stack{display:flex;flex-direction:column;gap:16px}
+.grid{display:grid;gap:16px}
+.kerb{height:7px;background:repeating-linear-gradient(90deg,var(--kerb) 0 18px,var(--kerb-w) 18px 36px)}
+
+/* Thanh trên cùng */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--asphalt);color:var(--on-asphalt)}
+.top-in{display:flex;align-items:center;gap:24px;min-height:56px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 26px/1 var(--f-display);letter-spacing:.02em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.logo svg{width:34px;height:34px;flex:none}
+.logo i{font-style:italic;color:var(--paint)}
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.nav::-webkit-scrollbar{display:none}
+.nav a{color:var(--on-asphalt-2);text-decoration:none;font:700 16px/1 var(--f-display);letter-spacing:.07em;text-transform:uppercase;padding:19px 12px 16px;white-space:nowrap;border-bottom:3px solid transparent}
+.nav a:hover{color:#fff}
+.nav a[aria-current="page"]{color:#fff;border-bottom-color:var(--paint)}
+@media (max-width:760px){.top-in{flex-wrap:wrap;gap:0;padding-top:8px}.nav{margin-left:0;width:100%}.nav a{padding:12px 10px 10px}}
+
+/* Nút và thẻ nhỏ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border:2px solid var(--ink);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer;font:700 18px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;box-shadow:0 3px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translateY(1px);box-shadow:0 2px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+.btn.primary{background:var(--paint);color:var(--paint-ink);border-color:#14171C;box-shadow:0 3px 0 #14171C}
+.btn.sm{padding:7px 12px;font-size:15px;box-shadow:0 2px 0 var(--ink)}
+.btn.lg{padding:15px 26px;font-size:21px}
+.btn.ghost{background:transparent;border-color:var(--line);box-shadow:none;color:var(--ink-2)}
+.btn.ghost:hover{background:var(--surface-2);transform:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font:600 13px/1.4 var(--f-body);background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.chip.ok{background:var(--good-soft);color:var(--good)} .chip.no{background:var(--bad-soft);color:var(--bad)}
+.chip.paint{background:var(--paint);color:var(--paint-ink)} .chip.info{background:var(--info-soft);color:var(--info)}
+.plate{display:inline-grid;place-items:center;min-width:54px;padding:2px 10px 0;background:#fff;color:#14171C;border:3px solid #14171C;border-radius:8px;font:italic 800 34px/1.1 var(--f-display);letter-spacing:.02em}
+.plate.sm{min-width:38px;font-size:22px;border-width:2px;border-radius:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;box-shadow:var(--shadow)}
+.card.flat{box-shadow:none} .card.soft{background:var(--surface-2);border-color:transparent;box-shadow:none}
+
+/* Trang chủ */
+.hero{padding-block:44px 52px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:40px;align-items:center}
+.hero h1{font-weight:800;font-size:clamp(46px,8.4vw,92px);line-height:1.12;text-transform:uppercase;margin:14px 0 18px}
+.hero h1 em{font-style:italic;color:var(--em-ink);background:linear-gradient(transparent 62%,var(--hl) 62% 94%,transparent 94%);padding:0 4px;margin:0 -4px}
+.lede{font-size:18px;color:var(--ink-2);max-width:56ch}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+.hero-meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
+.hero-meta b{display:block;font:800 34px/1 var(--f-display)} .hero-meta span{font-size:13px;color:var(--ink-2)}
+.track-card{background:var(--asphalt);color:var(--on-asphalt);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.track-card .cap{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;font:700 14px/1.2 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--on-asphalt-2)}
+.track-card svg{display:block;width:100%;height:auto}
+.sec{padding-block:48px}
+.sec.alt{background:var(--surface);border-block:1px solid var(--line)}
+.sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:26px;max-width:68ch}
+.sec-head h2{font-size:clamp(32px,5vw,48px);font-weight:800;line-height:1.14;text-transform:uppercase}
+.stages{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.stage{display:flex;flex-direction:column;gap:12px;padding:22px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.stage h3{font-size:26px;font-weight:700;line-height:1.12}
+.stage ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:15px}
+.stage .btn{margin-top:auto;align-self:flex-start}
+.flow{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));list-style:none;margin:0;padding:0;counter-reset:f}
+.flow li{counter-increment:f;padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.flow li::before{content:counter(f);font:italic 800 30px/1 var(--f-display);color:var(--ink)}
+.flow b{font:700 20px/1.15 var(--f-display)} .flow span{font-size:14px;color:var(--ink-2)}
+.goals{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.goals .card{padding:18px}
+.goals h4{font-size:21px;font-weight:700;margin-bottom:6px}
+.foot{background:var(--asphalt);color:var(--on-asphalt-2);margin-top:40px;font-size:14px}
+.foot-in{padding-block:26px;display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap}
+.foot b{color:#fff}
+@media (max-width:860px){.hero-grid{grid-template-columns:minmax(0,1fr)}.hero{padding-block:28px 36px}}
+
+/* Trang bài học */
+.lesson{display:grid;grid-template-columns:260px minmax(0,1fr);gap:36px;padding-block:30px 20px;align-items:start}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);display:flex;flex-direction:column;gap:18px;max-height:calc(100vh - 96px);overflow:auto}
+.stepper{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.stepper a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--ink-2);font-weight:600;font-size:15px;line-height:1.25}
+.stepper a:hover{background:var(--surface-2);color:var(--ink)}
+.stepper a[aria-current="step"]{background:var(--asphalt);color:#fff}
+.stepper .sn{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:800 17px/1 var(--f-display);background:var(--surface-2);color:var(--ink)}
+.stepper a[aria-current="step"] .sn{background:var(--paint);color:var(--paint-ink)}
+.stepper small{display:block;font-weight:500;font-size:12px;opacity:.75}
+.toc{display:flex;flex-direction:column;gap:2px;border-left:3px solid var(--line);padding-left:4px}
+.toc a{padding:6px 10px;font-size:14px;color:var(--ink-2);text-decoration:none;border-radius:6px;line-height:1.35}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.rail h4{font:700 13px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.rail details>summary{cursor:pointer;font:700 13px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);list-style:none;padding:4px 0}
+.lh{display:flex;gap:18px;align-items:flex-start;margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.lh h1{font-size:clamp(34px,5.4vw,54px);font-weight:800;line-height:1.14;text-transform:uppercase}
+.lh p{margin-top:8px;color:var(--ink-2);max-width:62ch}
+.prose{max-width:70ch}
+.prose>*+*{margin-top:14px}
+.topic{padding-bottom:34px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}
+.topic>h2{font-size:clamp(28px,4vw,38px);font-weight:800;line-height:1.1;margin-bottom:14px}
+.topic h3{font-size:23px;font-weight:700;margin-top:22px}
+.prose ul,.prose ol{padding-left:22px;margin-block:0}
+.prose li+li{margin-top:6px}
+.prose table{border-collapse:collapse;width:100%;font-size:15px}
+.prose th,.prose td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.prose th{background:var(--surface-2);font:700 16px var(--f-display);letter-spacing:.05em;text-transform:uppercase}
+.tw{overflow-x:auto}
+.callout{border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;max-width:70ch}
+.callout b.t{font:800 15px/1.2 var(--f-display);letter-spacing:.12em;text-transform:uppercase}
+.callout.ex{background:var(--info-soft);color:var(--ink)} .callout.ex b.t{color:var(--info)}
+.callout.more{background:var(--violet-soft)} .callout.more b.t{color:var(--violet)}
+.callout.tip{background:var(--warn-soft)} .callout.tip b.t{color:var(--warn)}
+.callout.warn{background:var(--bad-soft)} .callout.warn b.t{color:var(--bad)}
+.callout .src{font-size:13px;color:var(--ink-2)}
+.fig{margin:6px 0;max-width:640px}
+.fig svg{display:block;width:100%;height:auto}
+.fig figcaption{font-size:13px;color:var(--ink-2);margin-top:6px}
+.dg-t{fill:var(--ink)} .dg-t2{fill:var(--ink-2)} .dg-line{stroke:var(--line)} .dg-box{fill:var(--surface-2);stroke:var(--line)}
+.smartstrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:70ch}
+.smartstrip div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 8px;text-align:center}
+.smartstrip b{display:block;font:italic 800 34px/1 var(--f-display)} .smartstrip span{display:block;font-weight:600;font-size:13px;line-height:1.25;margin-top:4px}
+.smartstrip small{display:block;font-size:12px;color:var(--ink-2);margin-top:4px;line-height:1.3}
+@media (max-width:560px){.smartstrip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tl{display:flex;gap:4px;max-width:70ch;align-items:stretch}
+.tl span{display:grid;place-items:center;min-height:44px;border-radius:5px;font:700 15px var(--f-display);letter-spacing:.04em;padding:0 2px;text-align:center}
+.tl .w{background:var(--asphalt);color:#fff} .tl .r{background:var(--paint);color:var(--paint-ink)} .tl .l{background:var(--good-soft);color:var(--good)}
+.nextbar{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:12px;padding:18px;border:2px dashed var(--line);border-radius:10px;max-width:70ch}
+@media (max-width:900px){
+  .lesson{grid-template-columns:minmax(0,1fr);gap:18px;padding-top:18px}
+  .rail{position:static;max-height:none;overflow:visible;gap:10px}
+  .stepper{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .stepper a{white-space:nowrap;border:1px solid var(--line);padding:8px 12px}
+  .stepper small{display:none}
+  .toc{border-left:0;padding-left:0}
+  .lh{flex-direction:column;gap:10px}
+}
+
+/* Bài thực hành và kiểm tra nhanh */
+.pr{display:flex;flex-direction:column;gap:14px;max-width:760px}
+.pr+.pr{margin-top:18px}
+.pr h3{font-size:26px;font-weight:700;line-height:1.15}
+.pr .intro{color:var(--ink-2);font-size:15px}
+.qrow{display:flex;flex-direction:column;gap:9px;padding-top:14px;border-top:1px dashed var(--line)}
+.qrow:first-of-type{border-top:0;padding-top:0}
+.qrow>p{font-weight:600}
+.cats,.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opts.col{flex-direction:column}
+.opt{display:flex;align-items:flex-start;gap:10px;text-align:left;padding:9px 13px;border:2px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font-weight:600;font-size:15px;line-height:1.4}
+.opt:hover:not([disabled]){border-color:var(--ink)}
+.opt[disabled]{cursor:default}
+.opt.sel{border-color:var(--ink);background:var(--surface-2)}
+.opt.correct{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.opt input{margin-top:4px;accent-color:var(--ink)}
+.fb{font-size:14.5px;padding:10px 13px;border-radius:8px;line-height:1.5}
+.fb.ok{background:var(--good-soft);color:var(--good)} .fb.no{background:var(--bad-soft);color:var(--bad)}
+.fb b{font-weight:700}
+.qc{max-width:70ch;border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.qc .eyebrow{color:var(--ink)}
+
+/* Cuộc đua */
+.race{display:grid;gap:22px;grid-template-columns:minmax(0,1fr) minmax(300px,410px);grid-template-areas:"pit cv" "opts cv" "tw cv" "help cv";grid-template-rows:auto auto auto 1fr;align-items:start}
+.pit{grid-area:pit} .cvw{grid-area:cv;position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px)} .gopts{grid-area:opts} .tower{grid-area:tw} .help{grid-area:help}
+@media (max-width:900px){.race{grid-template-columns:minmax(0,1fr);grid-template-areas:"pit" "cv" "opts" "tw" "help";grid-template-rows:auto}.cvw{position:static;max-width:440px;margin-inline:auto;width:100%}}
+.asphalt{background:var(--asphalt);color:var(--on-asphalt)}
+.pit{border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-height:178px}
+.pit .hd{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pit .hd .no{font:800 22px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--paint)}
+.pit .hd .sc{margin-left:auto;font:700 15px var(--f-mono);color:var(--on-asphalt-2)}
+.pit .q{font-size:19px;line-height:1.45;font-weight:600;color:#fff}
+.pit .chip{background:var(--asphalt-2);color:var(--on-asphalt)}
+.gbar{height:8px;border-radius:99px;background:var(--asphalt-2);overflow:hidden}
+.gbar i{display:block;height:100%;width:100%;background:var(--paint);transform-origin:left;transition:none}
+.verdict{display:flex;flex-direction:column;gap:8px}
+.verdict .v{font:800 28px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase}
+.verdict .v.ok{color:#5BE39C} .verdict .v.no{color:#FF8A80}
+.verdict p{font-size:15.5px;line-height:1.5;color:var(--on-asphalt)}
+.gopts{display:flex;flex-direction:column;gap:8px}
+.gopt{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:11px 13px;background:var(--surface);border:2px solid var(--line);border-radius:8px;cursor:pointer;font-size:15px;font-weight:500;line-height:1.4}
+.gopt .lt{flex:none;width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font:800 20px/1 var(--f-display);color:#14171C}
+.gopt:hover:not([disabled]){border-color:var(--ink)}
+.gopt.on{border-color:var(--ink);box-shadow:inset 6px 0 0 var(--paint);background:var(--surface-2)}
+.gopt.good{background:var(--good-soft);border-color:var(--good)} .gopt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.gopt[disabled]{cursor:default}
+.lane0{background:#FFC400} .lane1{background:#52B6FF} .lane2{background:#C69BFF} .lane3{background:#FF9A57}
+.cv{position:relative;border-radius:12px;overflow:hidden;background:var(--asphalt);box-shadow:var(--shadow)}
+.cv canvas{display:block;width:100%;aspect-ratio:360/450;touch-action:pan-y;background:#20242C}
+.cv-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(14,16,20,.82);text-align:center}
+.cv-ov .box{display:flex;flex-direction:column;gap:12px;align-items:center;max-width:300px;color:#fff}
+.cv-ov h3{font-size:34px;font-weight:800;text-transform:uppercase;line-height:1.05}
+.cv-ov p{font-size:14.5px;color:var(--on-asphalt-2)}
+.ctrls{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px;margin-top:12px}
+.ctrls .btn{padding:14px 8px;font-size:20px}
+.ctrls+.row{margin-top:10px}
+.tower{border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.tower h4{font:700 14px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--on-asphalt-2);margin-bottom:4px}
+.tr{display:grid;grid-template-columns:30px 8px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 8px;border-radius:6px;background:var(--asphalt-2);font:700 18px/1.1 var(--f-display);letter-spacing:.05em;text-transform:uppercase}
+.tr .p{display:grid;place-items:center;background:#fff;color:#14171C;border-radius:4px;height:26px;font-size:17px}
+.tr .cl{width:8px;height:22px;border-radius:2px}
+.tr .s{font:700 15px var(--f-mono)}
+.tr.me{background:var(--paint);color:var(--paint-ink)} .tr.me .p{background:#14171C;color:#fff}
+.help{font-size:14px;color:var(--ink-2);display:flex;flex-direction:column;gap:8px}
+.help kbd{font:700 13px var(--f-mono);background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:1px 6px}
+.help label{display:flex;gap:8px;align-items:center;cursor:pointer;color:var(--ink)}
+.help input{accent-color:var(--ink);width:17px;height:17px}
+
+/* Kết quả */
+.res-hero{border-radius:12px;padding:26px;display:grid;gap:24px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center}
+.res-hero h2{font-size:clamp(36px,6vw,60px);font-weight:800;line-height:1.12;text-transform:uppercase;color:#fff}
+.res-hero .big{font:800 clamp(64px,12vw,110px)/1 var(--f-display);color:var(--paint)}
+.res-hero .big small{font-size:.38em;color:var(--on-asphalt-2);margin-left:6px}
+.res-hero p{color:var(--on-asphalt-2);max-width:48ch}
+.podium svg{display:block;width:100%;max-width:340px;height:auto;margin-inline:auto}
+@media (max-width:760px){.res-hero{grid-template-columns:minmax(0,1fr)}}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px 14px;cursor:pointer;font:700 16px var(--f-display);letter-spacing:.06em;text-transform:uppercase}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.rv{display:flex;flex-direction:column;gap:8px;padding:16px 18px;border:1px solid var(--line);border-left-width:6px;border-radius:8px;background:var(--surface)}
+.rv.ok{border-left-color:var(--good)} .rv.no{border-left-color:var(--bad)}
+.rv h4{font:600 16px/1.45 var(--f-body)}
+.rv .ans{font-size:14.5px;display:flex;flex-direction:column;gap:2px}
+.rv .why{font-size:14.5px;color:var(--ink-2)}
+.reviews{display:flex;flex-direction:column;gap:10px;max-width:820px}
+
+/* Thư viện tài liệu */
+.docs{display:flex;flex-direction:column;gap:12px;max-width:900px}
+.doc{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.doc-h{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:16px 18px}
+.doc-h .tt{flex:1 1 260px;min-width:0}
+.doc-h h3{font-size:24px;font-weight:700;line-height:1.15}
+.doc-h p{font-size:14px;color:var(--ink-2);margin-top:3px}
+.doc-b{border-top:1px solid var(--line);padding:18px 20px;background:var(--surface-2)}
+.md{max-width:72ch;font-size:15px}
+.md>*+*{margin-top:10px}
+.md h3{font-size:22px;margin-top:16px}
+.md ul{padding-left:20px;margin-block:0}
+.md table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface)}
+.md th,.md td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+.md th{font:700 15px var(--f-display);letter-spacing:.05em;text-transform:uppercase;background:var(--surface-2)}
+.srcs{display:flex;flex-direction:column;gap:10px;max-width:820px;margin:0;padding-left:20px;font-size:14.5px}
+.srcs a{text-decoration-thickness:1px;text-underline-offset:3px}
+
+/* Hoàn thành */
+.fin{display:grid;gap:26px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;padding:30px;border-radius:12px}
+.fin h1{font-size:clamp(40px,7vw,72px);font-weight:800;line-height:1.12;text-transform:uppercase;color:#fff}
+.fin h1 em{font-style:italic;color:var(--paint)}
+.fin p{color:var(--on-asphalt-2);max-width:50ch;margin-top:12px}
+.fin svg{display:block;width:100%;max-width:300px;height:auto;margin-inline:auto}
+.scoreline{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.scoreline .card{display:flex;flex-direction:column;gap:6px}
+.scoreline b{font:800 44px/1 var(--f-display)}
+@media (max-width:760px){.fin{grid-template-columns:minmax(0,1fr);padding:22px}}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14.5px;font-weight:600;z-index:70;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* Chỉnh thêm */
+main:focus{outline:none}
+.pr,#race,#rs-diem,#rs-loi-giai,#gioi-thieu{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}
+.gopts:empty{display:none}
+.pit .small{line-height:1.45}
+@media (max-width:900px){.pit{min-height:0;padding:14px 16px}.pit .q{font-size:17px}.cvw{max-width:340px}.nextbar{padding:14px}}
+@media (max-width:560px){.hero-meta{gap:16px}.lh .plate{align-self:flex-start}.res-hero,.fin{padding:20px}}
+
+.lh.compact{margin-bottom:16px;padding-bottom:14px;align-items:center}
+.lh.compact h1{font-size:clamp(26px,3.6vw,36px)}
+.lh.compact p{display:none}
+@media (max-width:900px){.lh.compact{flex-direction:row;align-items:center;gap:14px}}
+.res-hero .eyebrow{display:block;margin-bottom:8px}
+.pit .btn{align-self:flex-start}
+@media (max-width:760px){.topic,.pr,#race,#rs-diem,#rs-loi-giai,#gioi-thieu{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 100px)}}
+
+@media (max-width:560px){.ctrls .btn{font-size:17px;letter-spacing:.02em;white-space:nowrap;padding-inline:4px}}
+</style>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="#trang-chu" aria-label="StudyPlan, về trang chủ">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="5" y="3" width="3" height="29" rx="1.5" fill="#EDEFF3"/><g transform="translate(9 4)"><rect width="20" height="15" rx="1.5" fill="#FFC400"/><rect x="5" width="5" height="5" fill="#14171C"/><rect x="15" width="5" height="5" fill="#14171C"/><rect y="5" width="5" height="5" fill="#14171C"/><rect x="10" y="5" width="5" height="5" fill="#14171C"/><rect x="5" y="10" width="5" height="5" fill="#14171C"/><rect x="15" y="10" width="5" height="5" fill="#14171C"/></g></svg>
+      Study<i>Plan</i>
+    </a>
+    <nav class="nav" id="nav" aria-label="Điều hướng chính"></nav>
+  </div>
+  <div class="kerb"></div>
+</header>
+
+<main id="view" tabindex="-1"></main>
+
+<footer class="foot">
+  <div class="kerb"></div>
+  <div class="wrap foot-in">
+    <div><b>StudyPlan</b> · Học phần SSA101, Learning Skills<br>Sản phẩm của nhóm KDOT · Giảng viên hướng dẫn: Trịnh Phương Anh</div>
+    <div>Không cần tài khoản.<br>Trang không lưu điểm hay tiến độ của bạn.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script>
+(function(){"use strict";
+/* ===== Nội dung chặng 1 (Buổi 1) ===== */
+const CH = [];
+CH.push({
+  id: 1, hash: "chang-1", no: "01", title: "Thấu hiểu bản thân và mục tiêu SMART", short: "SWOT và mục tiêu SMART", min: 90,
+  goal: "Nhận diện rào cản cá nhân, dùng SWOT để hiểu bản thân và lập mục tiêu SMART cho học kỳ.",
+  outcomes: ["Kể ra các rào cản học tập phổ biến của sinh viên năm đầu.", "Phân biệt đúng Điểm mạnh, Điểm yếu, Cơ hội và Thách thức.", "Viết được một mục tiêu đủ 5 yếu tố SMART."],
+  topics: [
+    { id: "rao-can", title: "Vì sao cần một kế hoạch học tập?", body: [
+      ["p", "Bước vào đại học, bạn có nhiều cơ hội hơn nhưng cũng phải tự chủ hơn: bài nhiều hơn, không ai nhắc từng việc. Nhiều bạn hứa tối nay tự học lúc 8 giờ, lướt điện thoại vài phút rồi nhìn lại đã 11 giờ đêm."],
+      ["p", "Khảo sát của nhóm KDOT cho thấy **65,8%** sinh viên gặp khó ở quản lý thời gian và **63,2%** gặp khó ở phương pháp tự học. Những rào cản như trì hoãn, học dồn sát giờ thi hay mất phương hướng rất phổ biến. Chúng thường đến từ việc chưa có phương pháp và chưa có kế hoạch, không phải vì bạn kém."],
+      ["more", "Con người hay đánh giá thấp thời gian một việc cần. Trong nghiên cứu của Buehler, Griffin và Ross (1994), 37 sinh viên dự đoán hoàn thành luận văn cuối khóa sau trung bình 33,9 ngày, nhưng thực tế mất trung bình 55,5 ngày. Chỉ khoảng 30% xong trong thời gian họ tự dự đoán. Hiện tượng này được gọi là “ảo tưởng kế hoạch” (Kahneman và Tversky đề xuất năm 1979). Cách đối phó: ước lượng dư ra và ghi lại thời gian thực tế.", ["buehler"]],
+      ["check", { q: "Điều nào mô tả đúng nhất “ảo tưởng kế hoạch”?", o: ["Luôn làm xong sớm hơn dự kiến", "Có xu hướng ước lượng thiếu thời gian một việc cần", "Lập kế hoạch quá chi tiết nên không làm được"], a: 1, why: "Ảo tưởng kế hoạch là xu hướng đánh giá thấp thời gian cần thiết, kể cả khi đã từng làm việc tương tự." }]
+    ] },
+    { id: "swot", title: "SWOT cá nhân", body: [
+      ["p", "SWOT giúp bạn nhìn bản thân từ bốn góc. Hai góc đầu là yếu tố bên trong (thuộc về bạn). Hai góc sau là yếu tố bên ngoài (thuộc về môi trường)."],
+      ["fig", "swot", "Hình 1. Bốn ô SWOT chia theo bên trong, bên ngoài, có lợi và có hại."],
+      ["table", ["Ô", "Là gì", "Ví dụ ở đại học"], [
+        ["S · Điểm mạnh", "Kỹ năng, thế mạnh bạn đang có", "Đọc tài liệu tiếng Anh nhanh, ghi chép gọn"],
+        ["W · Điểm yếu", "Hạn chế về kỷ luật, tập trung, phương pháp", "Hay trì hoãn, mở điện thoại khi đang học"],
+        ["O · Cơ hội", "Hỗ trợ từ giảng viên, bạn bè, thư viện, câu lạc bộ", "Phòng học nhóm ở thư viện, workshop ôn thi"],
+        ["T · Thách thức", "Áp lực điểm số, khối lượng môn lớn, cám dỗ mạng xã hội", "6 môn học, deadline dồn vào cùng một tuần"]
+      ]],
+      ["warn", "Hay điền nhầm S và O. “Đọc tiếng Anh nhanh” là Điểm mạnh vì thuộc về bạn. “Thư viện có nhiều tài liệu tiếng Anh” là Cơ hội vì thuộc về môi trường. Câu hỏi nhanh: “Điều này nằm ở mình hay ở bên ngoài?”"],
+      ["h3", "Câu hỏi gợi ý khi tự suy ngẫm"],
+      ["ul", ["**S:** Môn nào mình học tốt nhất và vì sao?", "**W:** Điều gì khiến mình hay trì hoãn?", "**O:** Ai hoặc nguồn nào trong trường có thể giúp mình?", "**T:** Điều gì bên ngoài hay kéo mình khỏi việc học?"]],
+      ["tip", "Cho một bạn trong nhóm đọc bảng SWOT của bạn. Bạn bè thường nhìn ra những “điểm mù” mà chính bạn không thấy."],
+      ["more", "Heinz Weihrich (1982) đề xuất ma trận TOWS để biến SWOT thành hành động bằng cách ghép các ô với nhau: SO (dùng điểm mạnh để nắm cơ hội), ST (dùng điểm mạnh để đối phó thách thức), WO (khắc phục điểm yếu nhờ cơ hội), WT (giảm điểm yếu để tránh thách thức).", ["weihrich"]],
+      ["ex", "S “đọc tiếng Anh nhanh” + O “thư viện có tài liệu tiếng Anh” → mục tiêu: đọc một bài báo chuyên ngành mỗi tuần. W “hay lướt điện thoại” + T “mạng xã hội” → để điện thoại ngoài tầm tay trong mỗi khối học."],
+      ["check", { q: "“Hay mở điện thoại khi đang học” thuộc ô nào?", o: ["Điểm mạnh (S)", "Điểm yếu (W)", "Cơ hội (O)", "Thách thức (T)"], a: 1, why: "Đây là thói quen của chính bạn nên thuộc yếu tố bên trong, và nó có hại cho việc học: Điểm yếu." }]
+    ] },
+    { id: "smart", title: "Mục tiêu SMART", body: [
+      ["p", "“Em muốn học giỏi và nâng cao GPA” chưa phải một mục tiêu. Đó là mong muốn mơ hồ, vì không ai biết thế nào là xong. Một mục tiêu chuẩn cần đủ năm yếu tố SMART."],
+      ["html", "<div class=\"smartstrip\"><div><b>S</b><span>Cụ thể</span><small>Làm gì?</small></div><div><b>M</b><span>Đo lường được</span><small>Bao nhiêu?</small></div><div><b>A</b><span>Khả thi</span><small>Làm được không?</small></div><div><b>R</b><span>Phù hợp</span><small>Có liên quan, thực tế?</small></div><div><b>T</b><span>Có thời hạn</span><small>Khi nào xong?</small></div></div>"],
+      ["ex", "Sửa câu: “Em muốn đạt điểm cao môn SSA101.” → “Đạt điểm tổng kết môn SSA101 từ 8,5/10 (điểm A) trở lên vào cuối học kỳ 1.” Cụ thể: môn SSA101. Đo lường: 8,5/10. Thời hạn: cuối học kỳ 1."],
+      ["h3", "Ba nhóm mục tiêu nên có"],
+      ["ul", ["**Học tập:** GPA, điểm một môn, học bổng.", "**Kỹ năng:** ngoại ngữ, tin học, kỹ năng mềm.", "**Ngoại khóa:** câu lạc bộ, sự kiện."]],
+      ["ex", "Học tập: đạt từ 8,0/10 ở bài kiểm tra giữa kỳ SSA101 bằng cách ôn 4 buổi mỗi tuần, mỗi buổi 45 phút.<br>Kỹ năng: làm 12 bài luyện nghe trong 4 tuần (3 bài mỗi tuần) và đạt 6.0 ở bài nghe thử cuối tháng.<br>Ngoại khóa: dự đủ 3 buổi sinh hoạt câu lạc bộ trong tháng và nhận phụ trách một việc ở sự kiện cuối tháng."],
+      ["warn", "Có con số chưa chắc đã tốt. Yếu tố A (Khả thi) cần nhìn vào thời gian và năng lực thật của bạn. “Đạt 10/10 mọi môn trong một tuần” đo được nhưng không khả thi."],
+      ["more", "Cụm S.M.A.R.T. xuất hiện trong bài của George T. Doran năm 1981 về viết mục tiêu quản lý; ý nghĩa các chữ cái được diễn giải khác nhau theo thời gian. Nghiên cứu về đặt mục tiêu của Locke và Latham (2002) cho thấy mục tiêu cụ thể và đủ thách thức thường dẫn đến kết quả tốt hơn mục tiêu mơ hồ kiểu “cứ cố gắng hết sức”.", ["doran", "locke"]],
+      ["check", { q: "Mục tiêu nào có cả đo lường và thời hạn?", o: ["Cải thiện kỹ năng nghe tiếng Anh", "Đạt 6.0 ở bài nghe thử vào cuối học kỳ này", "Luyện nghe thật nhiều mỗi ngày"], a: 1, why: "Chỉ lựa chọn thứ hai có con số (6.0) và mốc thời gian (cuối học kỳ)." }]
+    ] },
+    { id: "hanh-dong", title: "Từ mục tiêu đến hành động", body: [
+      ["p", "Mục tiêu nằm trên giấy sẽ mãi là giấc mơ nếu không có kế hoạch hành động. Chặng 2 sẽ giúp bạn xếp ưu tiên và phân bổ thời gian. Trước đó, hãy biến mục tiêu thành việc làm cụ thể."],
+      ["h3", "Mục tiêu kết quả và mục tiêu quá trình"],
+      ["ul", ["**Kết quả:** điểm tổng kết 8,5/10. Bạn không điều khiển trực tiếp được con số này.", "**Quá trình:** ôn 4 buổi mỗi tuần, mỗi buổi 45 phút. Bạn điều khiển được việc này."]],
+      ["more", "Kế hoạch dạng “Nếu … thì …” (ý định thực hiện) gắn một hành động với một thời điểm hoặc tình huống cụ thể. Tổng hợp 94 thử nghiệm của Gollwitzer và Sheeran (2006) cho thấy hiệu ứng trung bình đến lớn (d = 0,65) lên việc đạt mục tiêu.", ["gollwitzer"]],
+      ["ex", "Mục tiêu tuần: xong chương 3 trước Chủ nhật. Kế hoạch nếu–thì: nếu tối thứ Hai và thứ Tư sau bữa cơm, thì mình học chương 3 trong 45 phút ở bàn học và để điện thoại ở ngăn kéo."],
+      ["check", { q: "Câu nào là kế hoạch dạng nếu–thì?", o: ["Mình sẽ cố gắng học chăm hơn", "Nếu 19:30 tối thứ Ba, thì mình ngồi vào bàn học chương 3 trong 45 phút", "Mình muốn đạt điểm A"], a: 1, why: "Chỉ câu thứ hai gắn hành động với một thời điểm và việc làm cụ thể." }]
+    ] }
+  ],
+  practice: [
+    { t: "sort", title: "Phân loại S–W–O–T", intro: "Chọn ô đúng cho từng ý. Hỏi nhanh: ý này nằm ở bạn hay ở bên ngoài?", cats: ["S · Điểm mạnh", "W · Điểm yếu", "O · Cơ hội", "T · Thách thức"], items: [
+      ["Em ghi chép gọn và biết tóm tắt bài.", 0, "Kỹ năng của chính em, có lợi: Điểm mạnh."],
+      ["Em hay mở điện thoại khi đang học và mất tập trung.", 1, "Thói quen của em, có hại: Điểm yếu."],
+      ["Thư viện trường có phòng học nhóm và nhiều tài liệu.", 2, "Nguồn hỗ trợ bên ngoài, có lợi: Cơ hội."],
+      ["Học kỳ này có 6 môn và deadline dồn vào cùng một tuần.", 3, "Áp lực từ bên ngoài, có hại: Thách thức."],
+      ["Câu lạc bộ học thuật tổ chức workshop ôn thi.", 2, "Hoạt động ở môi trường bên ngoài và có lợi: Cơ hội."],
+      ["Em hay để sát hạn nộp mới bắt đầu làm bài.", 1, "Thói quen của em, có hại: Điểm yếu."],
+      ["Bạn cùng phòng hay bật nhạc to và rủ chơi game vào buổi tối.", 3, "Cám dỗ đến từ bên ngoài, có hại: Thách thức."],
+      ["Em đọc tài liệu tiếng Anh khá nhanh.", 0, "Kỹ năng của chính em, có lợi: Điểm mạnh."]
+    ] },
+    { t: "multi", title: "Mục tiêu này còn thiếu gì?", intro: "Mục tiêu: “Em sẽ chăm chỉ học tiếng Anh hơn.”", q: "Chọn tất cả yếu tố SMART mà câu này còn thiếu.", o: ["S · Cụ thể", "M · Đo lường được", "A · Khả thi", "R · Phù hợp", "T · Có thời hạn"], a: [0, 1, 4], why: "Câu này chưa nói rõ học phần nào hay làm gì (nghe, đọc, từ vựng), chưa có con số và chưa có ngày hoàn thành. Khả thi và Phù hợp chưa thể đánh giá khi mục tiêu còn mơ hồ." },
+    { t: "choice", title: "Chọn bản viết lại tốt nhất", intro: "Mục tiêu gốc: “Em muốn học giỏi môn SSA101.”", q: "Bản nào là mục tiêu SMART tốt nhất?", o: ["Em sẽ học SSA101 thật chăm chỉ trong cả học kỳ.", "Em sẽ đạt điểm tổng kết SSA101 từ 8,5/10 trở lên vào cuối học kỳ, bằng cách ôn 3 buổi mỗi tuần, mỗi buổi 45 phút.", "Em sẽ đạt 10/10 mọi bài kiểm tra SSA101 trong tuần tới.", "Em sẽ cố gắng cải thiện điểm SSA101 nhiều nhất có thể."], a: 1, why: "Bản thứ hai có việc cụ thể, con số, cách làm khả thi và thời hạn. Bản một và bốn mơ hồ. Bản ba có con số nhưng không khả thi." }
+  ],
+  quiz: [
+    { q: "Theo khảo sát của nhóm KDOT, khó khăn nào gặp ở khoảng 65,8% sinh viên?", o: ["Quản lý thời gian", "Quan hệ với bạn bè", "Kỹ năng thuyết trình"], a: 0, why: "65,8% gặp khó ở quản lý thời gian và 63,2% gặp khó ở phương pháp tự học.", tp: "rao-can" },
+    { q: "Bạn dự đoán làm xong bài trong 3 ngày nhưng thực tế mất 5 ngày. Đây là biểu hiện của gì?", o: ["Ảo tưởng kế hoạch", "Ôn tập cách quãng", "Điểm mạnh bên trong"], a: 0, why: "Đánh giá thấp thời gian cần thiết là ảo tưởng kế hoạch.", tp: "rao-can" },
+    { q: "Điều nào là Cơ hội (O) với một sinh viên?", o: ["Hay trì hoãn bài tập", "Câu lạc bộ học thuật mở workshop ôn thi", "Áp lực điểm số cuối kỳ"], a: 1, why: "Cơ hội là yếu tố bên ngoài có lợi, như câu lạc bộ, thư viện, sự hỗ trợ của giảng viên.", tp: "swot" },
+    { q: "“Khối lượng môn học lớn, deadline dồn vào một tuần” thuộc ô nào?", o: ["Điểm yếu", "Cơ hội", "Thách thức", "Điểm mạnh"], a: 2, why: "Đây là áp lực từ bên ngoài và có hại: Thách thức.", tp: "swot" },
+    { q: "Hai ô nào của SWOT là yếu tố bên trong?", o: ["Điểm mạnh và Điểm yếu", "Cơ hội và Thách thức", "Điểm yếu và Thách thức"], a: 0, why: "Điểm mạnh và Điểm yếu thuộc về chính bạn. Cơ hội và Thách thức thuộc về môi trường.", tp: "swot" },
+    { q: "Chữ M trong SMART nhấn mạnh điều gì?", o: ["Có người giám sát", "Có con số hoặc chỉ số đo lường", "Dễ nhớ"], a: 1, why: "M là Measurable: mục tiêu phải đo được bằng con số hoặc chỉ số.", tp: "smart" },
+    { q: "Mục tiêu nào đủ các yếu tố SMART?", o: ["Em muốn học giỏi tiếng Anh", "Làm 12 bài luyện nghe trong 4 tuần, 3 bài mỗi tuần, để đạt 6.0 bài nghe thử cuối tháng", "Em sẽ cố gắng hết sức trong học kỳ này"], a: 1, why: "Chỉ lựa chọn thứ hai có việc cụ thể, con số, khối lượng khả thi và thời hạn.", tp: "smart" },
+    { q: "“Đạt 10/10 mọi môn trong tuần tới” yếu nhất ở yếu tố nào?", o: ["Cụ thể", "Khả thi", "Thời hạn"], a: 1, why: "Mục tiêu có con số và thời hạn nhưng gần như không khả thi với thời gian và năng lực thực tế.", tp: "smart" },
+    { q: "“Dự đủ 3 buổi sinh hoạt câu lạc bộ trong tháng này” thuộc nhóm mục tiêu nào?", o: ["Học tập", "Kỹ năng", "Ngoại khóa"], a: 2, why: "Câu lạc bộ và sự kiện thuộc nhóm mục tiêu ngoại khóa.", tp: "smart" },
+    { q: "Câu nào là kế hoạch dạng nếu–thì?", o: ["Mình sẽ học chăm hơn", "Nếu 19:30 tối nay, thì mình ngồi vào bàn học và để điện thoại ở ngăn kéo", "Mình muốn đạt điểm A"], a: 1, why: "Kế hoạch nếu–thì gắn hành động với một thời điểm hoặc tình huống cụ thể.", tp: "hanh-dong" }
+  ]
+});
+/* ===== Nội dung chặng 2 (Buổi 2) ===== */
+CH.push({
+  id: 2, hash: "chang-2", no: "02", title: "Quản lý thời gian, ưu tiên và kiểm soát xao lãng", short: "Ma trận ưu tiên, thời gian và tập trung", min: 45,
+  goal: "Phân bổ thời gian hợp lý, xếp việc theo ưu tiên để bớt trì hoãn và học theo khoảng thời gian.",
+  outcomes: ["Phân loại công việc theo độ quan trọng và độ khẩn cấp.", "Áp dụng phương pháp học 25 phút, nghỉ 5 phút.", "Lập khung kế hoạch tuần có khối tự học và thời gian dự phòng."],
+  topics: [
+    { id: "ma-tran", title: "Ma trận ưu tiên: quan trọng và khẩn cấp", body: [
+      ["p", "Có bao giờ cả ngày bận rộn nhưng tối nhìn lại, việc quan trọng nhất vẫn chưa xong? Thường là do chưa xếp thứ tự ưu tiên. Hãy hỏi hai câu cho mỗi việc: việc này có quan trọng với mục tiêu của mình không, và nó có khẩn cấp (sắp đến hạn) không?"],
+      ["fig", "matrix", "Hình 2. Ma trận ưu tiên bốn nhóm."],
+      ["table", ["Nhóm", "Là gì", "Ví dụ", "Làm gì"], [
+        ["Nhóm 1", "Quan trọng và khẩn cấp", "Bài nộp đêm nay, lịch thi tuần sau", "Làm ngay"],
+        ["Nhóm 2", "Quan trọng, chưa khẩn cấp", "Ôn tập sớm, học ngoại ngữ hằng ngày, lập kế hoạch", "Xếp lịch và bảo vệ thời gian"],
+        ["Nhóm 3", "Khẩn cấp, không quan trọng", "Tin nhắn rủ đi chơi đột xuất, thông báo mạng xã hội", "Từ chối, hẹn lại hoặc nhờ người khác"],
+        ["Nhóm 4", "Không quan trọng, không khẩn cấp", "Lướt mạng xã hội, xem phim vô bổ", "Cắt giảm tối đa"]
+      ]],
+      ["tip", "Nhóm 2 quyết định thành công lâu dài. Hãy làm nó trước khi nó biến thành Nhóm 1. Ôn bài từ sớm thì sẽ không phải thức đêm."],
+      ["ex", "Một bạn dành 3 tiếng tối nay lướt mạng xã hội trong khi sáng mai có bài kiểm tra SSA101. Bạn ấy đang dành thời gian cho Nhóm 4 và bỏ quên Nhóm 1."],
+      ["more", "Ý tưởng tách “khẩn cấp” khỏi “quan trọng” gắn với Dwight D. Eisenhower. Trong bài phát biểu ngày 19/8/1954 ở Evanston, Illinois, ông nói: “Tôi có hai loại vấn đề, khẩn cấp và quan trọng”, và ông nói rõ đó là lời của một cựu hiệu trưởng đại học. Ma trận bốn ô về sau mang tên ông và được nhiều tác giả về quản lý thời gian phổ biến.", ["eisenhower"]],
+      ["check", { q: "Bài tập lớn nộp sau 2 tuần, rất quan trọng với điểm số. Nếu bạn bắt đầu ngay hôm nay, việc này thuộc nhóm nào?", o: ["Nhóm 1", "Nhóm 2", "Nhóm 3"], a: 1, why: "Quan trọng nhưng chưa khẩn cấp là Nhóm 2. Làm sớm giúp nó không biến thành Nhóm 1." }]
+    ] },
+    { id: "khoang-thoi-gian", title: "Học theo khoảng thời gian (25/5)", body: [
+      ["p", "Để đánh bại trì hoãn và xao lãng, hãy chia thời gian học thành các khoảng ngắn tập trung cao: **25 phút học** hoàn toàn không điện thoại, rồi **5 phút nghỉ** để giữ tỉnh táo và giảm mệt mỏi."],
+      ["html", "<div class=\"tl\" role=\"img\" aria-label=\"Bốn phiên học 25 phút xen kẽ nghỉ 5 phút, rồi nghỉ dài 15 đến 30 phút\"><span class=\"w\" style=\"flex:25\">Học 25</span><span class=\"r\" style=\"flex:5\">5</span><span class=\"w\" style=\"flex:25\">Học 25</span><span class=\"r\" style=\"flex:5\">5</span><span class=\"w\" style=\"flex:25\">Học 25</span><span class=\"r\" style=\"flex:5\">5</span><span class=\"w\" style=\"flex:25\">Học 25</span><span class=\"l\" style=\"flex:24\">Nghỉ dài 15–30</span></div>"],
+      ["ol", ["Chọn một việc cụ thể cho phiên học.", "Học 25 phút, điện thoại ngoài tầm tay.", "Nghỉ 5 phút: đứng dậy, uống nước, vươn vai.", "Sau 4 phiên, nghỉ dài 15 đến 30 phút."]],
+      ["warn", "Trong 5 phút nghỉ, tuyệt đối không lướt mạng xã hội. Năm phút rất dễ bị kéo thành hàng giờ."],
+      ["more", "Kỹ thuật Pomodoro do Francesco Cirillo, khi còn là sinh viên ở Ý, phát triển vào cuối thập niên 1980 với chiếc đồng hồ nhà bếp hình quả cà chua (pomodoro). Quy trình gốc: 25 phút làm việc, 5 phút nghỉ, và sau mỗi 4 phiên thì nghỉ dài 15 đến 30 phút.", ["cirillo"]],
+      ["check", { q: "Trong 5 phút nghỉ giữa hai phiên, việc nào phù hợp nhất?", o: ["Lướt mạng xã hội cho thư giãn", "Đứng dậy, uống nước, vươn vai", "Xem một tập phim ngắn"], a: 1, why: "Nghỉ ngắn nên rời bàn và tránh màn hình để dễ quay lại học đúng giờ." }]
+    ] },
+    { id: "ke-hoach-tuan", title: "Lập kế hoạch tuần", body: [
+      ["p", "Một kế hoạch tuần tốt kết hợp lịch cố định trên lớp với các khối tự học tập trung. Nó trả lời ba câu hỏi: tuần này mục tiêu là gì, việc nào ưu tiên, và làm vào lúc nào."],
+      ["ol", ["Viết mục tiêu tuần theo SMART, ví dụ: xong chương 3 và 20 bài tập trước Chủ nhật.", "Liệt kê mọi việc trong tuần rồi phân loại bằng ma trận ưu tiên.", "Điền lịch cố định (giờ lên lớp, đi làm thêm, ăn ngủ) trước.", "Đặt các khối tự học vào khung giờ còn trống, ưu tiên Nhóm 1 và Nhóm 2.", "Chừa vài khối thời gian dự phòng (buffer)."]],
+      ["ex", "Thứ Hai 19:30–20:15 · Chương 3 (Nhóm 2) · hai phiên 25/5.<br>Thứ Tư 20:00–21:00 · Báo cáo nhóm (Nhóm 1).<br>Thứ Bảy 09:00–10:30 · Dự phòng cho việc phát sinh."],
+      ["tip", "Khi lịch ở trường đổi đột xuất hoặc bài mất lâu hơn dự kiến, khối dự phòng cho bạn chỗ để dồn việc mà không phá cả tuần. Tỷ lệ dự phòng là kinh nghiệm thực hành, hãy thử rồi chỉnh theo thói quen của bạn."],
+      ["more", "Cyril Northcote Parkinson (1955) nhận xét rằng công việc có xu hướng giãn ra cho vừa với thời gian được dành cho nó. Vì vậy hãy đặt giới hạn cho từng khối, ví dụ 45 phút cho một bài, thay vì “học đến khi xong”.", ["parkinson"]],
+      ["h3", "Bài tập thực hành của khóa học"],
+      ["p", "Xây dựng bản kế hoạch học tập cá nhân trong một tuần, gồm: mục tiêu tuần chuẩn SMART, phân loại độ ưu tiên và phân bổ khối thời gian sát lịch thực tế. Bài được chấm theo tính logic, tính thực tế và tính linh hoạt. Mẫu kế hoạch tuần có trong Thư viện."],
+      ["go", "Mở thư viện tài liệu", "thu-vien"],
+      ["check", { q: "Vì sao nên có khối thời gian dự phòng trong tuần?", o: ["Để có chỗ dồn việc khi lịch đổi hoặc việc mất lâu hơn dự kiến", "Để học ít đi", "Để lịch trông đẹp hơn"], a: 0, why: "Dự phòng là chỗ đệm cho những việc phát sinh, nhờ đó kế hoạch không bị vỡ." }]
+    ] },
+    { id: "chong-xao-lang", title: "Kiểm soát xao lãng", body: [
+      ["p", "Xao lãng không chỉ do ý chí yếu. Môi trường học quyết định rất nhiều. Hãy làm cho việc học dễ hơn và việc xao lãng khó hơn."],
+      ["ul", ["Để điện thoại ở phòng khác hoặc trong ngăn kéo trong khối học và tắt thông báo.", "Mỗi khối chỉ một việc. Ghi việc đó lên giấy trước khi bắt đầu.", "Chọn một chỗ học cố định, đóng các tab và ứng dụng không cần.", "Khi muốn kiểm tra điện thoại, hãy ghi ý nghĩ đó ra giấy, học tiếp, đến giờ nghỉ mới xử lý."]],
+      ["ex", "Kế hoạch nếu–thì chống xao lãng: nếu mình muốn mở điện thoại giữa phiên học, thì mình ghi ý nghĩ đó vào mảnh giấy cạnh bàn và học tiếp đến hết 25 phút."],
+      ["more", "Mỗi lần chuyển qua lại giữa các việc đều có “chi phí chuyển đổi”: chậm hơn và dễ sai hơn (Rubinstein, Meyer và Evans, 2001). Đó là lý do một khối học nên chỉ có một việc.", ["rubinstein"]],
+      ["check", { q: "Cách nào giảm xao lãng hiệu quả nhất trong một khối học?", o: ["Để điện thoại cạnh sách, úp màn hình", "Để điện thoại trong ngăn kéo hoặc phòng khác và tắt thông báo", "Mở video làm nền"], a: 1, why: "Điện thoại càng xa tầm tay và càng ít thông báo thì càng ít cơ hội xao lãng." }]
+    ] }
+  ],
+  practice: [
+    { t: "sort", title: "Xếp việc vào đúng nhóm", intro: "Nhóm 1: quan trọng và khẩn cấp. Nhóm 2: quan trọng, chưa khẩn cấp. Nhóm 3: khẩn cấp, không quan trọng. Nhóm 4: không quan trọng, không khẩn cấp.", cats: ["Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4"], items: [
+      ["Nộp bài tập trước 23:59 đêm nay.", 0, "Quan trọng và sát hạn: Nhóm 1, làm ngay."],
+      ["Ôn tập sớm cho kỳ thi còn 3 tuần nữa.", 1, "Quan trọng nhưng chưa gấp: Nhóm 2, xếp lịch sớm."],
+      ["Bạn nhắn rủ đi chơi đột xuất khi mình đang cần học.", 2, "Có vẻ gấp nhưng không phục vụ mục tiêu: Nhóm 3."],
+      ["Lướt mạng xã hội 3 tiếng trước ngày kiểm tra.", 3, "Không quan trọng, không gấp: Nhóm 4, cắt giảm."],
+      ["Học ngoại ngữ 25 phút mỗi ngày.", 1, "Quan trọng, không có hạn gấp, quyết định thành công lâu dài: Nhóm 2."],
+      ["Ôn đề cho bài thi diễn ra vào sáng mai.", 0, "Quan trọng và rất gần hạn: Nhóm 1."],
+      ["Trả lời ngay mọi tin nhắn tán gẫu trong nhóm chat.", 2, "Khẩn cấp giả, không quan trọng: Nhóm 3."],
+      ["Lập kế hoạch tuần vào tối Chủ nhật.", 1, "Quan trọng, chưa gấp: Nhóm 2."]
+    ] },
+    { t: "multi", title: "Tìm lỗi trong lịch của An", intro: "Tối thứ Ba của An: 19:00–22:00 học liên tục 3 tiếng, điện thoại đặt cạnh sách, không giờ nghỉ. Bài nộp lúc 23:59 để đến 22:00 mới bắt đầu làm. Cả tuần không có khối dự phòng. Mỗi mục trong lịch đều ghi rõ giờ bắt đầu và giờ kết thúc.", q: "Chọn tất cả điểm chưa hợp lý.", o: ["Học liên tục 3 tiếng không nghỉ", "Điện thoại đặt cạnh sách", "Bài nộp 23:59 để đến sát giờ cuối mới làm", "Cả tuần không chừa khối dự phòng", "Mỗi mục ghi rõ giờ bắt đầu và kết thúc"], a: [0, 1, 2, 3], why: "Bốn mục đầu đều là lỗi: thiếu nghỉ, có xao lãng, việc gấp bị dồn cuối và không có dự phòng. Ghi rõ giờ bắt đầu và kết thúc là điểm tốt." },
+    { t: "choice", title: "Sửa lịch cho An", intro: "Hãy chọn cách sửa tốt nhất cho tối thứ Ba của An.", q: "Phương án nào hợp lý nhất?", o: ["Học 4 tiếng liên tục cho kịp", "Làm bài nộp trước theo các phiên 25 phút học, 5 phút nghỉ, để điện thoại trong ngăn kéo, rồi chừa 30 phút dự phòng", "Bỏ hết giờ nghỉ để tiết kiệm thời gian", "Để việc khó nhất đến 23:00 vì lúc đó yên tĩnh"], a: 1, why: "Phương án thứ hai làm việc gấp trước, chia phiên có nghỉ, loại xao lãng và có dự phòng. Các phương án còn lại làm tăng mệt mỏi hoặc rủi ro trễ hạn." }
+  ],
+  quiz: [
+    { q: "Bài nộp lúc 23:59 đêm nay thuộc nhóm nào?", o: ["Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4"], a: 0, why: "Quan trọng và khẩn cấp là Nhóm 1: làm ngay.", tp: "ma-tran" },
+    { q: "Ôn tập sớm cho kỳ thi còn 3 tuần nữa thuộc nhóm nào?", o: ["Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4"], a: 1, why: "Quan trọng nhưng chưa khẩn cấp là Nhóm 2.", tp: "ma-tran" },
+    { q: "Tin nhắn rủ đi chơi đột xuất khi bạn đang cần học thuộc nhóm nào?", o: ["Nhóm 1", "Nhóm 2", "Nhóm 3", "Nhóm 4"], a: 2, why: "Khẩn cấp nhưng không quan trọng với mục tiêu: Nhóm 3. Hãy từ chối hoặc hẹn lại.", tp: "ma-tran" },
+    { q: "Nhóm nào quyết định thành công lâu dài và nên được xếp lịch sớm?", o: ["Nhóm 1", "Nhóm 2", "Nhóm 3"], a: 1, why: "Nhóm 2 là việc quan trọng chưa khẩn cấp. Làm sớm thì nó không biến thành Nhóm 1.", tp: "ma-tran" },
+    { q: "Bạn lướt mạng xã hội 3 tiếng trước ngày kiểm tra. Bạn đang bỏ quên nhóm nào?", o: ["Nhóm 1", "Nhóm 3", "Nhóm 4"], a: 0, why: "Bạn sa vào Nhóm 4 và bỏ quên Nhóm 1 (bài kiểm tra sắp tới).", tp: "ma-tran" },
+    { q: "Một phiên học theo khoảng thời gian cơ bản gồm bao nhiêu phút học và nghỉ?", o: ["25 phút học, 5 phút nghỉ", "50 phút học, 5 phút nghỉ", "10 phút học, 20 phút nghỉ"], a: 0, why: "Quy trình cơ bản là 25 phút học và 5 phút nghỉ.", tp: "khoang-thoi-gian" },
+    { q: "Trong 5 phút nghỉ, việc nào nên tránh?", o: ["Uống nước", "Lướt mạng xã hội", "Đứng dậy vươn vai"], a: 1, why: "Mạng xã hội dễ kéo 5 phút nghỉ thành hàng giờ.", tp: "khoang-thoi-gian" },
+    { q: "Thời gian dự phòng giúp ích nhất khi nào?", o: ["Khi lịch ở trường đổi đột xuất hoặc việc mất lâu hơn dự kiến", "Khi muốn học ít hơn", "Khi đã làm xong mọi việc"], a: 0, why: "Dự phòng là chỗ đệm cho việc phát sinh.", tp: "ke-hoach-tuan" },
+    { q: "Thứ tự hợp lý khi lập kế hoạch tuần là gì?", o: ["Điền lịch cố định trước, rồi đặt khối tự học vào chỗ trống", "Đặt khối tự học trước, lịch lên lớp tính sau", "Chỉ ghi những việc mình thích"], a: 0, why: "Lịch cố định không đổi được nên đặt trước, khối tự học xếp vào khoảng còn lại.", tp: "ke-hoach-tuan" },
+    { q: "Cách nào giảm xao lãng hiệu quả nhất trong một khối học?", o: ["Để điện thoại trong ngăn kéo hoặc phòng khác và tắt thông báo", "Để điện thoại cạnh sách, úp màn hình", "Mở video làm nền"], a: 0, why: "Điện thoại càng xa tầm tay thì càng ít cơ hội xao lãng.", tp: "chong-xao-lang" }
+  ]
+});
+/* ===== Nội dung chặng 3 (Buổi 3) ===== */
+CH.push({
+  id: 3, hash: "chang-3", no: "03", title: "Theo dõi, điều chỉnh và phương pháp tự học", short: "Theo dõi, điều chỉnh và phương pháp tự học", min: 45,
+  goal: "Đo tiến độ thực tế, chủ động điều chỉnh khi có sự cố và làm chủ bốn phương pháp tự học.",
+  outcomes: ["Theo dõi kế hoạch và điều chỉnh khi bị chậm.", "Chọn đúng phương pháp tự học cho từng loại nhiệm vụ.", "Góp ý và tự đánh giá một kế hoạch theo ba tiêu chí."],
+  topics: [
+    { id: "vong-lap", title: "Theo dõi và điều chỉnh kế hoạch", body: [
+      ["p", "Kế hoạch không phải bản án. Nó là bản nháp được thử trong thực tế. Cách làm đơn giản là một vòng lặp bốn bước: lập kế hoạch, thực hiện, kiểm tra, điều chỉnh."],
+      ["fig", "loop", "Hình 4. Vòng lặp lập kế hoạch, thực hiện, kiểm tra, điều chỉnh."],
+      ["ul", ["**Kiểm tra:** so việc đã làm với kế hoạch (xong, đang làm, trễ hạn) và so thời gian thực tế với thời gian dự kiến.", "**Tìm nguyên nhân:** ốm đau, bài phát sinh, ước lượng thiếu hay bị xao lãng?", "**Điều chỉnh:** dời việc sang ngày còn trống, chia nhỏ việc lớn, cắt bớt việc ít quan trọng, dùng khối dự phòng."]],
+      ["ex", "Thứ Ba bạn ốm nên chưa làm 90 phút báo cáo. Thay vì bỏ cuộc, hãy chia báo cáo thành hai phần 45 phút, đặt vào khối dự phòng Thứ Năm và sáng Thứ Sáu. Hạn nộp vẫn giữ nguyên."],
+      ["warn", "Đừng bỏ cuộc khi chậm tiến độ. Một ngày trễ không có nghĩa cả tuần hỏng. Điều nguy hiểm là lặng lẽ bỏ kế hoạch mà không điều chỉnh."],
+      ["tip", "Ghi lại thời gian thực tế của vài việc. Sau một hai tuần bạn sẽ ước lượng chính xác hơn. Đây là cách khắc phục ảo tưởng kế hoạch đã học ở chặng 1."],
+      ["check", { q: "Kế hoạch bị chậm do việc phát sinh. Hành động nào phù hợp nhất?", o: ["Bỏ kế hoạch tuần này", "Tìm nguyên nhân rồi dời hoặc chia nhỏ việc sang các ngày còn trống", "Học thâu đêm để bù hết trong một đêm"], a: 1, why: "Điều chỉnh linh hoạt giữ được kế hoạch mà không dồn sức một đêm." }]
+    ] },
+    { id: "bon-phuong-phap", title: "Bốn phương pháp tự học", body: [
+      ["p", "Cùng một giờ học nhưng cách học khác nhau cho kết quả khác nhau. Bốn phương pháp dưới đây dùng được cùng với kế hoạch của bạn."],
+      ["table", ["Phương pháp", "Làm thế nào", "Dùng khi"], [
+        ["Học theo khoảng thời gian", "Học 25 phút, nghỉ 5 phút", "Khó bắt đầu, dễ mệt, việc dài"],
+        ["Tự kiểm tra kiến thức", "Đóng sách, tự đặt câu hỏi và trả lời từ trí nhớ", "Từ vựng, công thức, chuẩn bị thi"],
+        ["Ôn tập cách quãng", "Nhắc lại sau những khoảng thời gian dãn dần", "Kiến thức cần nhớ lâu"],
+        ["Phương pháp giải thích", "Giải thích lại bằng lời đơn giản như đang giảng cho người khác", "Khái niệm khó, lý thuyết"]
+      ]],
+      ["fig", "curve", "Hình 3. Đường quên (minh họa) và tác dụng của ôn tập cách quãng."],
+      ["more", "Hermann Ebbinghaus (1885) là người đầu tiên đo “đường quên”: nếu không ôn lại, phần nhớ được giảm nhanh lúc đầu rồi chậm dần. Dunlosky và cộng sự (2013) đánh giá 10 kỹ thuật học tập phổ biến: tự kiểm tra và ôn tập cách quãng được xếp mức hữu ích cao; tự giải thích ở mức vừa phải; tóm tắt, gạch chân hoặc tô đậm và đọc lại ở mức hữu ích thấp.", ["ebbinghaus", "dunlosky"]],
+      ["warn", "Đọc đi đọc lại và tô màu tạo cảm giác đang học, nhưng thường kém hiệu quả hơn việc tự kiểm tra."],
+      ["check", { q: "Phương pháp nào là đóng sách lại và tự trả lời câu hỏi?", o: ["Tự kiểm tra kiến thức", "Ôn tập cách quãng", "Học theo khoảng thời gian"], a: 0, why: "Truy xuất kiến thức từ trí nhớ mà không nhìn tài liệu là tự kiểm tra." }]
+    ] },
+    { id: "ap-dung", title: "Áp dụng phương pháp vào nhiệm vụ cụ thể", body: [
+      ["p", "Đừng chọn phương pháp theo cảm hứng. Hãy chọn theo loại nhiệm vụ."],
+      ["table", ["Nhiệm vụ", "Gợi ý cách học", "Ví dụ trong lịch"], [
+        ["Nhớ 30 từ vựng mới", "Tự kiểm tra và ôn cách quãng", "Ngày 0 học; ngày 1, 3, 7 tự kiểm tra bằng thẻ từ"],
+        ["Hiểu một khái niệm khó", "Giải thích", "Giải thích 2 phút cho bạn hoặc nói to một mình, chỗ vấp thì quay lại đọc"],
+        ["Làm bài tập lớn dài", "Khoảng thời gian và chia nhỏ", "Chia 4 phần, mỗi phần 2 phiên 25 phút, kết thúc bằng một sản phẩm nhỏ"],
+        ["Ôn thi sau 3 tuần", "Cách quãng và tự kiểm tra", "Mỗi tuần 3 buổi ngắn, làm đề hoặc tự đặt câu hỏi thay vì chỉ đọc lại"]
+      ]],
+      ["tip", "Một lịch ôn cách quãng gợi ý: học hôm nay, ôn sau 1 ngày, 3 ngày, 7 ngày, 14 ngày. Đây là gợi ý để bắt đầu. Bạn có thể dãn ra khi đã nhớ chắc."],
+      ["check", { q: "Bạn cần nhớ 30 từ vựng trong 2 tuần. Cách nào phù hợp nhất?", o: ["Đọc lại danh sách nhiều lần trong một đêm", "Tự kiểm tra bằng thẻ từ và ôn lại sau 1, 3, 7 ngày", "Tô màu cả danh sách"], a: 1, why: "Tự kiểm tra kết hợp ôn cách quãng là cặp kỹ thuật hiệu quả để nhớ lâu." }]
+    ] },
+    { id: "phan-hoi", title: "Phản hồi đồng đẳng, nhật ký và cam kết", body: [
+      ["p", "Cuối khóa, bạn trình bày bản kế hoạch một tuần trước nhóm 5 đến 10 bạn. Thành viên trong nhóm và giảng viên đánh giá theo ba tiêu chí."],
+      ["table", ["Tiêu chí", "Câu hỏi", "Dấu hiệu tốt"], [
+        ["Tính logic", "Các phần có khớp nhau không?", "Mục tiêu tuần kéo theo việc, việc kéo theo khối giờ, việc gấp xếp trước"],
+        ["Tính thực tế", "Làm được trong thời gian thật không?", "Không xếp kín, có nghỉ và dự phòng, hợp với lịch lên lớp, dễ điều chỉnh khi có việc phát sinh"],
+        ["Khả năng vận dụng", "Mình có làm theo ngay được không?", "Việc nhỏ, rõ giờ, rõ cách làm"]
+      ]],
+      ["h3", "Góp ý theo ba bước"],
+      ["ul", ["Nêu một điều làm tốt, thật cụ thể.", "Nêu một điều cần chỉnh và lý do.", "Gợi ý một thay đổi có thể làm ngay."]],
+      ["h3", "Nhật ký phản hồi"],
+      ["p", "Cuối mỗi tuần, ghi hai dòng: điều gì hiệu quả, điều gì cần thay đổi. Sau đó chọn một thay đổi nhỏ cho tuần sau."],
+      ["h3", "Cam kết một thói quen"],
+      ["ex", "Nếu sau bữa tối, thì mình học 25 phút ở bàn học với điện thoại trong ngăn kéo, từ thứ Hai đến thứ Sáu."],
+      ["p", "Khóa học không đưa ra một công thức cho tất cả. Hy vọng bạn tìm được cách lập kế hoạch hợp với chính mình. Sự thay đổi lớn bắt đầu từ những thói quen nhỏ mỗi ngày."],
+      ["go", "Mở phiếu góp ý đồng đẳng trong Thư viện", "thu-vien"],
+      ["check", { q: "Nhận xét “Kế hoạch xếp kín mọi giờ, không có chỗ nghỉ hay dự phòng” thuộc tiêu chí nào?", o: ["Tính logic", "Tính thực tế", "Khả năng vận dụng"], a: 1, why: "Xếp kín mọi giờ làm kế hoạch khó thực hiện thật, nên đây là vấn đề về tính thực tế." }]
+    ] }
+  ],
+  practice: [
+    { t: "sort", title: "Chọn phương pháp phù hợp", intro: "Mỗi tình huống đang dùng phương pháp nào trong bốn phương pháp?", cats: ["Khoảng thời gian", "Tự kiểm tra", "Cách quãng", "Giải thích"], items: [
+      ["Em đóng sách lại và tự đặt câu hỏi về bài vừa học.", 1, "Tự truy xuất kiến thức không nhìn tài liệu: tự kiểm tra."],
+      ["Em hẹn xem lại bài sau 1 ngày, 3 ngày rồi 1 tuần.", 2, "Nhắc lại theo các mốc dãn cách: ôn tập cách quãng."],
+      ["Em giảng lại bài cho bạn bằng lời đơn giản nhất.", 3, "Giải thích bằng lời đơn giản: phương pháp giải thích."],
+      ["Em học 25 phút không điện thoại rồi nghỉ 5 phút.", 0, "Học xen kẽ nghỉ ngắn: học theo khoảng thời gian."],
+      ["Em tự nói lại khái niệm ma trận ưu tiên như đang dạy em trai.", 3, "Nói lại bằng lời của mình để phát hiện chỗ chưa hiểu: giải thích."],
+      ["Em làm đề thử rồi chấm xem câu nào sai.", 1, "Làm đề từ trí nhớ là tự kiểm tra."],
+      ["Em lên lịch ôn từ vựng vào ngày 1, 3 và 7 sau khi học.", 2, "Các mốc dãn dần là ôn tập cách quãng."],
+      ["Em chia buổi làm bài tập lớn thành bốn phiên ngắn có giờ nghỉ.", 0, "Chia phiên ngắn xen nghỉ: học theo khoảng thời gian."]
+    ] },
+    { t: "choice", title: "Điều chỉnh khi có sự cố", intro: "Bạn ốm hai ngày (Thứ Ba và Thứ Tư). Còn ba việc: báo cáo nhóm hạn Thứ Sáu (Nhóm 1), ôn 30 từ vựng (Nhóm 2) và buổi xem phim đã hẹn bạn (Nhóm 4).", q: "Phương án điều chỉnh nào tốt nhất?", o: ["Bỏ cả tuần và làm lại từ tuần sau", "Làm báo cáo trước, chia hai phần vào khối dự phòng Thứ Năm và sáng Thứ Sáu, dời ôn từ vựng sang cuối tuần, hẹn lại buổi xem phim", "Thức đến 3 giờ sáng để làm hết ba việc trong một đêm", "Chỉ đi xem phim vì đã hẹn rồi"], a: 1, why: "Phương án thứ hai làm việc gấp trước, chia nhỏ, dùng khối dự phòng, dời việc không gấp và cắt việc ít quan trọng." },
+    { t: "sort", title: "Nhận xét thuộc tiêu chí nào?", intro: "Phân loại các nhận xét đồng đẳng vào ba tiêu chí đánh giá kế hoạch.", cats: ["Tính logic", "Tính thực tế", "Khả năng vận dụng"], items: [
+      ["Mục tiêu tuần có liên quan rõ đến các việc trong lịch.", 0, "Các phần khớp nhau: tính logic."],
+      ["Lịch xếp kín mọi giờ, không có chỗ nghỉ hay dự phòng.", 1, "Khó thực hiện thật: tính thực tế."],
+      ["Mỗi việc đều có giờ bắt đầu và cách làm rõ, mình làm theo ngay được.", 2, "Làm theo được ngay: khả năng vận dụng."],
+      ["Việc Nhóm 1 lại xếp sau việc Nhóm 4, thứ tự chưa hợp lý.", 0, "Thứ tự ưu tiên chưa khớp: tính logic."],
+      ["Giờ tự học bị trùng với giờ lên lớp cố định.", 1, "Không khớp với lịch thật: tính thực tế."],
+      ["Kế hoạch ghi chung chung “học bài”, khó biết bắt đầu từ đâu.", 2, "Thiếu việc cụ thể để làm ngay: khả năng vận dụng."]
+    ] }
+  ],
+  quiz: [
+    { q: "Bốn bước của vòng lặp kế hoạch là gì?", o: ["Lập kế hoạch, thực hiện, kiểm tra, điều chỉnh", "Thực hiện, nghỉ, lập kế hoạch, bỏ", "Ước lượng, ngủ, làm, nộp"], a: 0, why: "Lập kế hoạch, thực hiện, kiểm tra rồi điều chỉnh, sau đó lặp lại.", tp: "vong-lap" },
+    { q: "Việc bị chậm do ốm đau nên được xử lý thế nào?", o: ["Bỏ qua và quên đi", "Dời hoặc chia nhỏ sang các ngày còn trống", "Làm hết trong một đêm"], a: 1, why: "Điều chỉnh bằng cách dời hoặc chia nhỏ, tận dụng khối dự phòng.", tp: "vong-lap" },
+    { q: "Vì sao nên ghi lại thời gian thực tế của công việc?", o: ["Để khoe với bạn", "Để ước lượng chính xác hơn cho tuần sau", "Để có thêm việc phải làm"], a: 1, why: "Dữ liệu thực tế giúp khắc phục xu hướng ước lượng thiếu thời gian.", tp: "vong-lap" },
+    { q: "Đóng sách lại và tự trả lời câu hỏi là phương pháp nào?", o: ["Học theo khoảng thời gian", "Tự kiểm tra kiến thức", "Ôn tập cách quãng", "Phương pháp giải thích"], a: 1, why: "Truy xuất kiến thức từ trí nhớ là tự kiểm tra.", tp: "bon-phuong-phap" },
+    { q: "Ôn lại sau 1 ngày, 3 ngày, 7 ngày là phương pháp nào?", o: ["Học theo khoảng thời gian", "Tự kiểm tra kiến thức", "Ôn tập cách quãng", "Phương pháp giải thích"], a: 2, why: "Nhắc lại theo các mốc dãn cách là ôn tập cách quãng.", tp: "bon-phuong-phap" },
+    { q: "Giải thích lại bài bằng lời đơn giản cho người khác là phương pháp nào?", o: ["Học theo khoảng thời gian", "Tự kiểm tra kiến thức", "Ôn tập cách quãng", "Phương pháp giải thích"], a: 3, why: "Đây là phương pháp giải thích: nói lại bằng lời của mình để lộ chỗ chưa hiểu.", tp: "bon-phuong-phap" },
+    { q: "Theo Dunlosky và cộng sự (2013), cặp kỹ thuật nào được xếp mức hữu ích cao?", o: ["Tô màu và đọc lại", "Tự kiểm tra và ôn tập cách quãng", "Tóm tắt và gạch chân"], a: 1, why: "Tự kiểm tra và ôn tập cách quãng được xếp hữu ích cao. Tô màu, đọc lại, tóm tắt, gạch chân xếp thấp.", tp: "bon-phuong-phap" },
+    { q: "Bạn cần nhớ 30 từ vựng trong 2 tuần. Cách nào phù hợp nhất?", o: ["Đọc lại danh sách nhiều lần trong một đêm", "Tự kiểm tra bằng thẻ từ và ôn sau 1, 3, 7 ngày", "Tô màu cả danh sách"], a: 1, why: "Tự kiểm tra kết hợp ôn cách quãng giúp nhớ lâu hơn.", tp: "ap-dung" },
+    { q: "“Kế hoạch xếp kín mọi giờ” là nhận xét về tiêu chí nào?", o: ["Tính logic", "Tính thực tế", "Khả năng vận dụng"], a: 1, why: "Xếp kín mọi giờ làm kế hoạch khó thực hiện thật: tính thực tế.", tp: "phan-hoi" },
+    { q: "Cách góp ý đồng đẳng hữu ích nhất là gì?", o: ["Chỉ khen chung chung", "Nêu điều làm tốt, điều cần chỉnh kèm lý do và một gợi ý cụ thể", "Chỉ chê điểm yếu"], a: 1, why: "Góp ý tốt có ba phần: điều làm tốt, điều cần chỉnh kèm lý do, gợi ý có thể làm ngay.", tp: "phan-hoi" }
+  ]
+});
+/* ===== Nguồn tham khảo và thư viện tài liệu ===== */
+const SRC = {
+  kdot: { s: "Khảo sát của nhóm KDOT", t: "Khảo sát của nhóm KDOT (tài liệu dự án học phần SSA101 – Learning Skills)." },
+  buehler: { s: "Buehler, Griffin và Ross (1994)", t: "Buehler, R., Griffin, D., & Ross, M. (1994). Exploring the “planning fallacy”: Why people underestimate their task completion times. Journal of Personality and Social Psychology, 67(3), 366–381.", u: "https://en.wikipedia.org/wiki/Planning_fallacy", ul: "Tóm tắt trên Wikipedia" },
+  weihrich: { s: "Weihrich (1982)", t: "Weihrich, H. (1982). The TOWS matrix: A tool for situational analysis. Long Range Planning, 15(2), 54–66." },
+  doran: { s: "Doran (1981)", t: "Doran, G. T. (1981). There’s a S.M.A.R.T. way to write management’s goals and objectives. Management Review, 70(11), 35–36." },
+  locke: { s: "Locke và Latham (2002)", t: "Locke, E. A., & Latham, G. P. (2002). Building a practically useful theory of goal setting and task motivation: A 35-year odyssey. American Psychologist, 57(9), 705–717." },
+  gollwitzer: { s: "Gollwitzer và Sheeran (2006)", t: "Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. Advances in Experimental Social Psychology, 38, 69–119.", u: "https://kops.uni-konstanz.de/entities/publication/2e749bfb-8533-437c-8203-7e788c910c5f", ul: "Trang xuất bản của Đại học Konstanz" },
+  eisenhower: { s: "Quote Investigator (2014)", t: "Quote Investigator (2014). What is important is seldom urgent and what is urgent is seldom important. Nguồn gốc câu nói trong bài phát biểu của Eisenhower ngày 19/8/1954.", u: "https://quoteinvestigator.com/2014/05/09/urgent/", ul: "Xem bài viết" },
+  cirillo: { s: "Duke Academic Resource Center", t: "Duke Academic Resource Center. Pomodoro Technique (kỹ thuật do Francesco Cirillo phát triển cuối thập niên 1980).", u: "https://arc.duke.edu/pomodoro-technique", ul: "Xem trang hướng dẫn" },
+  parkinson: { s: "Parkinson (1955)", t: "Parkinson, C. N. (1955, 19 tháng 11). Parkinson’s Law. The Economist." },
+  rubinstein: { s: "Rubinstein, Meyer và Evans (2001)", t: "Rubinstein, J. S., Meyer, D. E., & Evans, J. E. (2001). Executive control of cognitive processes in task switching. Journal of Experimental Psychology: Human Perception and Performance, 27(4), 763–797." },
+  ebbinghaus: { s: "Ebbinghaus (1885)", t: "Ebbinghaus, H. (1885). Über das Gedächtnis. Leipzig: Duncker & Humblot." },
+  dunlosky: { s: "Dunlosky và cộng sự (2013)", t: "Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students’ learning with effective learning techniques. Psychological Science in the Public Interest, 14(1), 4–58.", u: "https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html", ul: "Bản tin của Hiệp hội Khoa học Tâm lý (APS)" }
+};
+
+const DOCS = [
+  { id: "swot", title: "Mẫu bảng SWOT cá nhân", desc: "Bốn ô kèm câu hỏi gợi ý và bảng chuyển SWOT thành hành động.", md:
+"# Bảng SWOT cá nhân\n\nHọ tên: ...............   Ngày: ...............\n\n## Điểm mạnh (S): bên trong, có lợi\nGợi ý: Môn nào mình học tốt nhất? Bạn bè hay nhờ mình giúp việc gì? Thói quen học nào đã hiệu quả?\n- ...\n\n## Điểm yếu (W): bên trong, có hại\nGợi ý: Điều gì khiến mình hay trì hoãn? Mình mất tập trung vào lúc nào?\n- ...\n\n## Cơ hội (O): bên ngoài, có lợi\nGợi ý: Ai trong trường có thể giúp mình? Có tài liệu, lớp bổ trợ hay câu lạc bộ nào mình chưa dùng?\n- ...\n\n## Thách thức (T): bên ngoài, có hại\nGợi ý: Môn hay deadline nào gây áp lực nhất? Điều gì bên ngoài hay kéo mình khỏi việc học?\n- ...\n\n## Từ SWOT đến hành động (TOWS)\n| Hướng | Cách ghép | Việc mình sẽ làm |\n| SO | Dùng điểm mạnh để nắm cơ hội | |\n| ST | Dùng điểm mạnh để đối phó thách thức | |\n| WO | Khắc phục điểm yếu nhờ cơ hội | |\n| WT | Giảm điểm yếu để tránh thách thức | |\n\nMẹo: nhờ một bạn trong nhóm đọc bảng này và chỉ ra điều bạn chưa thấy." },
+  { id: "smart", title: "Phiếu mục tiêu SMART", desc: "Năm yếu tố, danh sách kiểm tra nhanh và ví dụ cho ba nhóm mục tiêu.", md:
+"# Phiếu mục tiêu SMART\n\nNhóm mục tiêu (chọn một): Học tập / Kỹ năng / Ngoại khóa\n\n| Yếu tố | Câu hỏi | Câu trả lời của mình |\n| S · Cụ thể | Mình sẽ làm gì? | |\n| M · Đo lường được | Bao nhiêu? Đo bằng chỉ số nào? | |\n| A · Khả thi | Vì sao mình làm được? Cần thời gian và nguồn lực nào? | |\n| R · Phù hợp | Mục tiêu này gắn với điều gì mình cần? | |\n| T · Có thời hạn | Hoàn thành trước ngày nào? | |\n\n## Kiểm tra nhanh trước khi chốt\n- Đã có con số đo lường chưa?\n- Đã có ngày hoàn thành chưa?\n- Mỗi tuần mình dành bao nhiêu giờ, và có khớp với lịch thật không?\n\n## Ví dụ\n- **Học tập:** Đạt từ 8,0/10 ở bài kiểm tra giữa kỳ SSA101 bằng cách ôn 4 buổi mỗi tuần, mỗi buổi 45 phút.\n- **Kỹ năng:** Làm 12 bài luyện nghe trong 4 tuần (3 bài mỗi tuần) và đạt 6.0 ở bài nghe thử cuối tháng.\n- **Ngoại khóa:** Dự đủ 3 buổi sinh hoạt câu lạc bộ trong tháng và nhận phụ trách một việc ở sự kiện cuối tháng.\n\n## Kế hoạch nếu–thì\nNếu (thời điểm hoặc tình huống) ............, thì mình (hành động) ............" },
+  { id: "matran", title: "Ma trận ưu tiên", desc: "Bốn nhóm, cách dùng trong 10 phút và bảng liệt kê việc.", md:
+"# Ma trận ưu tiên\n\n| | Khẩn cấp | Không khẩn cấp |\n| Quan trọng | Nhóm 1: Làm ngay | Nhóm 2: Xếp lịch và bảo vệ thời gian |\n| Không quan trọng | Nhóm 3: Từ chối, hẹn lại hoặc nhờ người khác | Nhóm 4: Cắt giảm tối đa |\n\n## Cách dùng trong 10 phút\n- Liệt kê mọi việc trong tuần.\n- Với mỗi việc hỏi: có quan trọng với mục tiêu của mình không? Có sắp đến hạn không?\n- Ghi nhóm bên cạnh mỗi việc.\n- Làm Nhóm 1 trước, rồi đặt Nhóm 2 vào các khối tự học có tên.\n- Với Nhóm 3 và 4: từ chối, hẹn lại hoặc giới hạn thời gian.\n\n## Bảng liệt kê việc\n| Việc | Hạn | Quan trọng? | Khẩn cấp? | Nhóm |\n| | | | | |\n| | | | | |\n| | | | | |" },
+  { id: "tuan", title: "Mẫu kế hoạch học tập 1 tuần", desc: "Bảng tuần có hàng dự phòng, quy tắc điền và nhật ký cuối tuần.", md:
+"# Kế hoạch học tập 1 tuần\n\nMục tiêu tuần (SMART): ...............\n\n| Khung giờ | T2 | T3 | T4 | T5 | T6 | T7 | CN |\n| Sáng | | | | | | | |\n| Chiều | | | | | | | |\n| Tối | | | | | | | |\n| Dự phòng | | | | | | | |\n\n## Quy tắc khi điền\n- Điền lịch cố định (lên lớp, đi làm thêm, ăn ngủ) trước.\n- Mỗi khối tự học ghi rõ việc, nhóm ưu tiên (1 đến 4) và phương pháp (25/5, tự kiểm tra, cách quãng, giải thích).\n- Chừa ít nhất hai khối dự phòng trong tuần.\n- Với khối khó bắt đầu, viết một dòng nếu–thì.\n\n## Cuối tuần: nhật ký phản hồi\n- Điều gì hiệu quả?\n- Điều gì cần thay đổi?\n- Một thay đổi nhỏ cho tuần sau:" },
+  { id: "phuongphap", title: "Thẻ bốn phương pháp tự học", desc: "Cách làm, ví dụ áp dụng và lỗi thường gặp của từng phương pháp.", md:
+"# Thẻ bốn phương pháp tự học\n\n| Phương pháp | Cách làm | Ví dụ áp dụng | Lỗi thường gặp |\n| Học theo khoảng thời gian | 25 phút học, 5 phút nghỉ, sau 4 phiên nghỉ dài 15 đến 30 phút | Chia bài tập lớn thành 4 phần, mỗi phần 2 phiên | Lướt mạng xã hội trong giờ nghỉ |\n| Tự kiểm tra kiến thức | Đóng sách, tự đặt câu hỏi và trả lời từ trí nhớ | Làm đề thử, dùng thẻ từ vựng | Chỉ đọc lại mà không tự hỏi |\n| Ôn tập cách quãng | Ôn lại sau 1, 3, 7, 14 ngày (gợi ý ban đầu) | Ôn từ vựng và công thức theo lịch | Học dồn một đêm rồi bỏ |\n| Phương pháp giải thích | Giải thích lại bằng lời đơn giản như đang giảng cho người khác | Giải thích ma trận ưu tiên trong 2 phút | Đọc thuộc lòng câu chữ của sách |" },
+  { id: "gopy", title: "Phiếu góp ý đồng đẳng", desc: "Ba tiêu chí logic, thực tế, vận dụng và cách góp ý ba bước.", md:
+"# Phiếu góp ý đồng đẳng\n\nNgười trình bày: ...............   Người góp ý: ...............\n\n| Tiêu chí | Câu hỏi | Điểm (1 đến 5) | Nhận xét |\n| Tính logic | Mục tiêu, việc và khối giờ có khớp nhau không? Việc gấp có xếp trước không? | | |\n| Tính thực tế | Có làm được trong thời gian thật không? Có nghỉ, có dự phòng, dễ điều chỉnh không? | | |\n| Khả năng vận dụng | Mình có làm theo ngay được không? Việc có nhỏ, rõ giờ, rõ cách làm không? | | |\n\n## Góp ý theo ba bước\n- Điều làm tốt (một ý cụ thể):\n- Điều cần chỉnh và lý do:\n- Gợi ý một thay đổi có thể làm ngay:" },
+  { id: "camket", title: "Phiếu nhật ký và cam kết thói quen", desc: "Hai dòng phản hồi mỗi tuần và một cam kết nếu–thì.", md:
+"# Phiếu nhật ký và cam kết thói quen\n\n## Nhật ký tuần ...\n- Điều hiệu quả:\n- Điều cần thay đổi:\n- Thay đổi nhỏ cho tuần sau:\n\n## Cam kết một thói quen\nNếu (thời điểm cố định mỗi ngày) ............, thì mình ............ trong ...... phút, từ ...... đến ......\n\nĐiều có thể cản trở mình: ............\nCách mình xử lý khi đó (nếu–thì): ............\n\nSự thay đổi lớn bắt đầu từ những thói quen nhỏ mỗi ngày." },
+  { id: "thuatngu", title: "Bảng thuật ngữ", desc: "Các khái niệm chính của ba chặng, giải thích ngắn.", md:
+"# Bảng thuật ngữ\n\n| Thuật ngữ | Nghĩa ngắn |\n| SWOT | Phân tích Điểm mạnh, Điểm yếu, Cơ hội, Thách thức |\n| SMART | Mục tiêu Cụ thể, Đo lường được, Khả thi, Phù hợp, Có thời hạn |\n| Ma trận ưu tiên | Bảng phân việc theo độ quan trọng và độ khẩn cấp |\n| Khối thời gian dự phòng | Khoảng trống chừa sẵn để dồn việc phát sinh |\n| Học theo khoảng thời gian | Học 25 phút xen nghỉ 5 phút |\n| Tự kiểm tra | Truy xuất kiến thức từ trí nhớ, không nhìn tài liệu |\n| Ôn tập cách quãng | Ôn lại theo các khoảng thời gian dãn dần |\n| Phương pháp giải thích | Giải thích lại bài bằng lời đơn giản |\n| Ảo tưởng kế hoạch | Xu hướng ước lượng thiếu thời gian cần cho một việc |\n| Kế hoạch nếu–thì | Gắn một hành động với một thời điểm hoặc tình huống cụ thể |" }
+];
+
+/* Chuyển Markdown đơn giản (tiêu đề ##, gạch đầu dòng, bảng, **đậm**) sang HTML */
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+function mdToHtml(md) {
+  const lines = md.split("\n"), out = []; let i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (!L.trim() || L.startsWith("# ")) { i++; continue; }
+    if (L.startsWith("## ")) { out.push("<h3>" + inl(L.slice(3)) + "</h3>"); i++; continue; }
+    if (L.startsWith("|")) {
+      const rows = []; while (i < lines.length && lines[i].startsWith("|")) { rows.push(lines[i].replace(/^\||\|$/g, "").split("|").map(c => c.trim())); i++; }
+      const head = rows.shift();
+      out.push("<div class=\"tw\"><table><thead><tr>" + head.map(c => "<th>" + inl(c) + "</th>").join("") + "</tr></thead><tbody>" + rows.map(r => "<tr>" + r.map(c => "<td>" + inl(c) + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>"); continue;
+    }
+    if (L.startsWith("- ")) {
+      const it = []; while (i < lines.length && lines[i].startsWith("- ")) { it.push("<li>" + inl(lines[i].slice(2)) + "</li>"); i++; }
+      out.push("<ul>" + it.join("") + "</ul>"); continue;
+    }
+    out.push("<p>" + inl(L) + "</p>"); i++;
+  }
+  return out.join("");
+}
+/* ===== Sơ đồ SVG (đổi màu theo giao diện sáng và tối) ===== */
+const FIG = {};
+const T1 = "font:700 22px var(--f-display);letter-spacing:.04em";
+const T2 = "font:14px var(--f-body)";
+
+FIG.swot = () => {
+  const cell = (x, y, bg, L, name, a, b) =>
+    "<rect x=\"" + x + "\" y=\"" + y + "\" width=\"240\" height=\"120\" rx=\"8\" style=\"fill:var(" + bg + ")\"/>" +
+    "<text x=\"" + (x + 18) + "\" y=\"" + (y + 62) + "\" class=\"dg-t\" style=\"font:italic 800 58px var(--f-display)\">" + L + "</text>" +
+    "<text x=\"" + (x + 74) + "\" y=\"" + (y + 36) + "\" class=\"dg-t\" style=\"" + T1 + "\">" + name + "</text>" +
+    "<text x=\"" + (x + 74) + "\" y=\"" + (y + 62) + "\" class=\"dg-t2\" style=\"" + T2 + "\">" + a + "</text>" +
+    "<text x=\"" + (x + 74) + "\" y=\"" + (y + 84) + "\" class=\"dg-t2\" style=\"" + T2 + "\">" + b + "</text>";
+  return "<svg viewBox=\"0 0 560 306\" role=\"img\" aria-label=\"Bốn ô SWOT: Điểm mạnh và Điểm yếu là yếu tố bên trong; Cơ hội và Thách thức là yếu tố bên ngoài\">" +
+    "<text x=\"190\" y=\"24\" text-anchor=\"middle\" class=\"dg-t2\" style=\"font:700 14px var(--f-display);letter-spacing:.14em\">CÓ LỢI</text>" +
+    "<text x=\"440\" y=\"24\" text-anchor=\"middle\" class=\"dg-t2\" style=\"font:700 14px var(--f-display);letter-spacing:.14em\">CÓ HẠI</text>" +
+    "<text transform=\"translate(30 106) rotate(-90)\" text-anchor=\"middle\" class=\"dg-t2\" style=\"font:700 14px var(--f-display);letter-spacing:.14em\">BÊN TRONG</text>" +
+    "<text transform=\"translate(30 236) rotate(-90)\" text-anchor=\"middle\" class=\"dg-t2\" style=\"font:700 14px var(--f-display);letter-spacing:.14em\">BÊN NGOÀI</text>" +
+    cell(70, 40, "--good-soft", "S", "ĐIỂM MẠNH", "Đọc tiếng Anh nhanh", "Ghi chép gọn") +
+    cell(320, 40, "--warn-soft", "W", "ĐIỂM YẾU", "Hay trì hoãn", "Mở điện thoại khi học") +
+    cell(70, 170, "--info-soft", "O", "CƠ HỘI", "Thư viện, phòng học nhóm", "Câu lạc bộ, giảng viên") +
+    cell(320, 170, "--bad-soft", "T", "THÁCH THỨC", "Deadline dồn một tuần", "Cám dỗ mạng xã hội") + "</svg>";
+};
+
+FIG.matrix = () => {
+  const cell = (x, y, bg, n, act, ex) =>
+    "<rect x=\"" + x + "\" y=\"" + y + "\" width=\"210\" height=\"120\" rx=\"8\" style=\"fill:var(" + bg + ")\"/>" +
+    "<text x=\"" + (x + 16) + "\" y=\"" + (y + 36) + "\" class=\"dg-t\" style=\"font:italic 800 30px var(--f-display);letter-spacing:.03em\">NHÓM " + n + "</text>" +
+    "<text x=\"" + (x + 16) + "\" y=\"" + (y + 66) + "\" class=\"dg-t\" style=\"font:700 20px var(--f-display);letter-spacing:.04em\">" + act + "</text>" +
+    "<text x=\"" + (x + 16) + "\" y=\"" + (y + 92) + "\" class=\"dg-t2\" style=\"" + T2 + "\">" + ex + "</text>";
+  const hd = "font:700 14px var(--f-display);letter-spacing:.14em";
+  return "<svg viewBox=\"0 0 560 316\" role=\"img\" aria-label=\"Ma trận ưu tiên bốn nhóm theo độ quan trọng và độ khẩn cấp\">" +
+    "<text x=\"215\" y=\"24\" text-anchor=\"middle\" class=\"dg-t2\" style=\"" + hd + "\">KHẨN CẤP</text>" +
+    "<text x=\"433\" y=\"24\" text-anchor=\"middle\" class=\"dg-t2\" style=\"" + hd + "\">KHÔNG KHẨN CẤP</text>" +
+    "<text transform=\"translate(34 100) rotate(-90)\" text-anchor=\"middle\" class=\"dg-t2\" style=\"" + hd + "\">QUAN TRỌNG</text>" +
+    "<text transform=\"translate(34 228) rotate(-90)\" text-anchor=\"middle\" class=\"dg-t2\" style=\"" + hd + "\">KHÔNG QUAN TRỌNG</text>" +
+    cell(110, 40, "--bad-soft", 1, "LÀM NGAY", "Bài nộp đêm nay, lịch thi") +
+    cell(328, 40, "--good-soft", 2, "XẾP LỊCH", "Ôn sớm, học ngoại ngữ") +
+    cell(110, 168, "--warn-soft", 3, "TỪ CHỐI, HẸN LẠI", "Tin nhắn rủ đi chơi") +
+    cell(328, 168, "--surface-2", 4, "CẮT GIẢM", "Lướt mạng xã hội") + "</svg>";
+};
+
+FIG.curve = () => {
+  const X0 = 64, X1 = 612, Y0 = 40, Y1 = 212;
+  const X = t => X0 + (X1 - X0) * t / 14, Y = r => Y1 - (Y1 - Y0) * r;
+  const build = (times, s0, mult) => {
+    let d = "";
+    for (let k = 0; k < times.length - 1; k++) {
+      const a = times[k], b = times[k + 1], s = s0 * Math.pow(mult, k);
+      for (let t = a; t <= b + 1e-9; t += 0.25) d += (d ? "L" : "M") + X(t).toFixed(1) + " " + Y(Math.exp(-(t - a) / s)).toFixed(1) + " ";
+    }
+    return d;
+  };
+  const A = build([0, 14], 2.2, 1), B = build([0, 1, 3, 7, 14], 2.2, 2.5);
+  const ticks = [0, 1, 3, 7, 14].map(t => "<text x=\"" + X(t).toFixed(1) + "\" y=\"232\" text-anchor=\"middle\" class=\"dg-t2\" style=\"font:600 13px var(--f-mono)\">" + t + "</text>").join("");
+  const dots = [1, 3, 7].map(t => "<circle cx=\"" + X(t).toFixed(1) + "\" cy=\"" + Y(1).toFixed(1) + "\" r=\"4.5\" style=\"fill:var(--surface);stroke:var(--info);stroke-width:2\"/>").join("");
+  const yl = [[1, "100%"], [0.5, "50%"], [0, "0%"]].map(p => "<text x=\"54\" y=\"" + (Y(p[0]) + 4).toFixed(1) + "\" text-anchor=\"end\" class=\"dg-t2\" style=\"font:600 13px var(--f-mono)\">" + p[1] + "</text><line x1=\"" + X0 + "\" x2=\"" + X1 + "\" y1=\"" + Y(p[0]).toFixed(1) + "\" y2=\"" + Y(p[0]).toFixed(1) + "\" class=\"dg-line\" stroke-width=\"1\"" + (p[0] === 0 ? "" : " stroke-dasharray=\"2 4\"") + "/>").join("");
+  return "<svg viewBox=\"0 0 640 272\" role=\"img\" aria-label=\"Đường quên minh họa: không ôn lại thì phần nhớ giảm gần về 0 sau 14 ngày; ôn lại ở ngày 1, 3 và 7 thì phần nhớ giảm chậm hơn mỗi lần\">" +
+    yl + "<g fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\">" +
+    "<path d=\"" + A + "\" style=\"stroke:var(--ink-2)\" stroke-width=\"2\" stroke-dasharray=\"6 5\"/>" +
+    "<path d=\"" + B + "\" style=\"stroke:var(--info)\" stroke-width=\"2.5\"/></g>" + dots + ticks +
+    "<text x=\"" + ((X0 + X1) / 2) + "\" y=\"256\" text-anchor=\"middle\" class=\"dg-t2\" style=\"" + T2 + "\">Số ngày sau khi học</text>" +
+    "<line x1=\"64\" x2=\"92\" y1=\"16\" y2=\"16\" style=\"stroke:var(--ink-2)\" stroke-width=\"2\" stroke-dasharray=\"6 5\"/><text x=\"98\" y=\"20\" class=\"dg-t\" style=\"" + T2 + "\">Không ôn lại</text>" +
+    "<line x1=\"214\" x2=\"242\" y1=\"16\" y2=\"16\" style=\"stroke:var(--info)\" stroke-width=\"2.5\"/><text x=\"248\" y=\"20\" class=\"dg-t\" style=\"" + T2 + "\">Ôn lại ở ngày 1, 3 và 7 (vòng tròn)</text></svg>";
+};
+
+FIG.loop = () => {
+  const pill = (x, y, n, label) =>
+    "<g><rect x=\"" + (x - 74) + "\" y=\"" + (y - 20) + "\" width=\"148\" height=\"40\" rx=\"8\" style=\"fill:var(--asphalt)\"/>" +
+    "<text x=\"" + (x - 56) + "\" y=\"" + (y + 7) + "\" style=\"font:italic 800 24px var(--f-display);fill:var(--paint)\">" + n + "</text>" +
+    "<text x=\"" + (x - 36) + "\" y=\"" + (y + 6) + "\" style=\"font:700 17px var(--f-display);letter-spacing:.05em;fill:#fff\">" + label + "</text></g>";
+  const chev = (x, y, a) => "<polygon points=\"-9,-8 9,0 -9,8\" transform=\"translate(" + x + " " + y + ") rotate(" + a + ")\" style=\"fill:var(--paint);stroke:var(--asphalt);stroke-width:2\"/>";
+  return "<svg viewBox=\"0 0 560 262\" role=\"img\" aria-label=\"Vòng lặp bốn bước: lập kế hoạch, thực hiện, kiểm tra, điều chỉnh\">" +
+    "<rect x=\"70\" y=\"50\" width=\"420\" height=\"160\" rx=\"70\" fill=\"none\" style=\"stroke:var(--asphalt-2)\" stroke-width=\"22\"/>" +
+    "<rect x=\"70\" y=\"50\" width=\"420\" height=\"160\" rx=\"70\" fill=\"none\" stroke=\"#fff\" stroke-opacity=\".55\" stroke-width=\"1.5\" stroke-dasharray=\"7 9\"/>" +
+    chev(469.5, 70.5, 45) + chev(469.5, 189.5, 135) + chev(90.5, 189.5, 225) + chev(90.5, 70.5, 315) +
+    pill(280, 50, "1", "LẬP KẾ HOẠCH") + pill(420, 130, "2", "THỰC HIỆN") + pill(280, 210, "3", "KIỂM TRA") + pill(140, 130, "4", "ĐIỀU CHỈNH") +
+    "<text x=\"280\" y=\"136\" text-anchor=\"middle\" class=\"dg-t2\" style=\"" + T2 + "\">Lặp lại mỗi tuần</text></svg>";
+};
+
+/* Bục nhận giải theo hạng của người chơi (1 đến 4) */
+function podiumSVG(rank) {
+  const blocks = [[2, 18, 82], [1, 96, 110], [3, 174, 58], [4, 252, 36]];
+  let s = "<svg viewBox=\"0 0 340 236\" role=\"img\" aria-label=\"Bạn về đích hạng " + rank + "\">";
+  blocks.forEach(b => {
+    const me = b[0] === rank, y = 220 - b[2];
+    s += "<rect x=\"" + b[1] + "\" y=\"" + y + "\" width=\"72\" height=\"" + b[2] + "\" rx=\"4\" style=\"fill:" + (me ? "var(--paint)" : "var(--asphalt-2)") + "\"/>" +
+      "<text x=\"" + (b[1] + 36) + "\" y=\"" + (y + 36) + "\" text-anchor=\"middle\" style=\"font:italic 800 34px var(--f-display);fill:" + (me ? "#14171C" : "#EDEFF3") + "\">" + b[0] + "</text>";
+    if (me) s += "<g transform=\"translate(" + (b[1] + 36) + " " + (y - 24) + ")\"><rect x=\"-26\" y=\"-14\" width=\"52\" height=\"24\" rx=\"5\" style=\"fill:var(--paint)\"/><text x=\"0\" y=\"4\" text-anchor=\"middle\" style=\"font:800 17px var(--f-display);letter-spacing:.08em;fill:#14171C\">BẠN</text><path d=\"M-7 10 L0 18 L7 10Z\" style=\"fill:var(--paint)\"/></g>";
+  });
+  return s + "<line x1=\"8\" x2=\"332\" y1=\"221\" y2=\"221\" stroke=\"#fff\" stroke-opacity=\".4\" stroke-width=\"2\"/></svg>";
+}
+
+function trophySVG() {
+  return "<svg viewBox=\"0 0 240 240\" role=\"img\" aria-label=\"Cúp hoàn thành khóa học\"><g stroke=\"#14171C\" stroke-width=\"5\" stroke-linejoin=\"round\" fill=\"#FFC400\">" +
+    "<path d=\"M72 36 h96 v52 a48 48 0 0 1 -96 0 z\"/><path d=\"M72 52 h-24 a8 8 0 0 0 -8 8 c0 28 18 44 38 46\" fill=\"none\"/><path d=\"M168 52 h24 a8 8 0 0 1 8 8 c0 28 -18 44 -38 46\" fill=\"none\"/>" +
+    "<rect x=\"108\" y=\"136\" width=\"24\" height=\"34\"/><rect x=\"80\" y=\"170\" width=\"80\" height=\"18\" rx=\"3\"/><rect x=\"64\" y=\"188\" width=\"112\" height=\"22\" rx=\"3\" fill=\"#fff\"/></g>" +
+    "<g fill=\"#14171C\">" + [0, 1, 2, 3, 4, 5].map(i => "<rect x=\"" + (64 + i * 18.67).toFixed(1) + "\" y=\"" + (i % 2 ? 188 : 199) + "\" width=\"18.67\" height=\"11\"/>").join("") + "</g></svg>";
+}
+/* ===== Lõi giao diện, trang chủ, thư viện, trang hoàn thành ===== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const rich = s => String(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const S = { prac: {}, chk: {}, res: {}, doc: null, filter: "all", pend: null };
+const ACT = {};
+let cur = { v: "trang-chu" }, DL = null;
+
+function toast(m) { const el = $("#toast"); el.textContent = m; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2800); }
+function copyText(t) {
+  const fb = () => { const a = document.createElement("textarea"); a.value = t; a.style.cssText = "position:fixed;opacity:0;top:0"; document.body.appendChild(a); a.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (e) {} a.remove(); toast(ok ? "Đã sao chép." : "Không sao chép được. Hãy bôi đen và nhấn Ctrl+C."); };
+  try { navigator.clipboard.writeText(t).then(() => toast("Đã sao chép."), fb); } catch (e) { fb(); }
+}
+const rankOf = sc => sc >= 90 ? 1 : sc >= 70 ? 2 : sc >= 50 ? 3 : 4;
+const nextHash = n => n < 3 ? "chang-" + (n + 1) : "hoan-thanh";
+
+function parse(h) {
+  const m = /^chang-([123])(?:-(thuc-hanh|kiem-tra|ket-qua))?$/.exec(h || "");
+  if (m) return { v: "chang", n: +m[1], step: m[2] || "doc" };
+  return { v: ["thu-vien", "hoan-thanh"].includes(h) ? h : "trang-chu" };
+}
+function go(h) { if (location.hash === "#" + h) route(); else location.hash = h; }
+function navHTML() {
+  const key = cur.v === "chang" ? "chang-" + cur.n : cur.v;
+  return [["trang-chu", "Trang chủ"], ["chang-1", "Chặng 1"], ["chang-2", "Chặng 2"], ["chang-3", "Chặng 3"], ["thu-vien", "Thư viện"]]
+    .map(i => "<a href=\"#" + i[0] + "\"" + (i[0] === key ? " aria-current=\"page\"" : "") + ">" + i[1] + "</a>").join("");
+}
+function render() {
+  Game.destroy();
+  const v = $("#view");
+  v.innerHTML = cur.v === "trang-chu" ? Home() : cur.v === "chang" ? Lesson(cur.n, cur.step) : cur.v === "thu-vien" ? Library() : Finish();
+  $("#nav").innerHTML = navHTML(); { const nv = $("#nav"), na = nv.querySelector("[aria-current]"); if (na) nv.scrollLeft = na.getBoundingClientRect().left - nv.getBoundingClientRect().left + nv.scrollLeft - (nv.clientWidth - na.offsetWidth) / 2; }
+  if (cur.v === "trang-chu") placeTrack();
+  if (cur.v === "chang" && cur.step === "kiem-tra") Game.start($("#race"), cur.n, onRaceDone);
+  if (S.pend) { const el = $("#tp-" + S.pend); S.pend = null; if (el) el.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); }
+}
+function route() { cur = parse(location.hash.slice(1)); const had = !!S.pend; render(); if (!had) window.scrollTo(0, 0); if (cur.v === "chang" && cur.step === "kiem-tra") { const r = $("#race"); if (r) r.scrollIntoView({ behavior: "auto", block: "start" }); } }
+
+document.addEventListener("click", e => { const el = e.target.closest("[data-act]"); if (el && ACT[el.dataset.act]) ACT[el.dataset.act](el, e); });
+window.addEventListener("hashchange", route);
+ACT.go = el => go(el.dataset.to);
+
+/* ----- Trang chủ ----- */
+function trackSVG() {
+  const d = "M90 250 C60 200 70 120 140 100 C210 80 250 140 310 120 C370 100 380 40 440 60 C500 80 490 170 450 220 C410 270 330 250 290 290 C250 330 150 330 110 300 C95 288 95 268 90 250 Z";
+  const cp = (f, n, l) => "<g class=\"cp\" data-f=\"" + f + "\"><circle r=\"17\" fill=\"#fff\" stroke=\"#14171C\" stroke-width=\"3\"/><text y=\"7\" text-anchor=\"middle\" style=\"font:italic 800 21px var(--f-display);fill:#14171C\">" + n + "</text><text y=\"40\" text-anchor=\"middle\" style=\"font:700 15px var(--f-display);letter-spacing:.1em;fill:#fff;stroke:#14171C;stroke-width:4px;paint-order:stroke\">" + l + "</text></g>";
+  let chk = ""; for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++) chk += "<rect x=\"" + (-16 + c * 8) + "\" y=\"" + (-8 + r * 8) + "\" width=\"8\" height=\"8\" fill=\"" + ((r + c) % 2 ? "#14171C" : "#fff") + "\"/>";
+  const car = "<rect x=\"-14\" y=\"-6\" width=\"28\" height=\"12\" rx=\"4\" fill=\"#FFC400\" stroke=\"#14171C\" stroke-width=\"2\"/><rect x=\"-6\" y=\"-3.5\" width=\"9\" height=\"7\" rx=\"2\" fill=\"#14171C\"/><rect x=\"-18\" y=\"-8\" width=\"4\" height=\"16\" rx=\"1\" fill=\"#14171C\"/><rect x=\"11\" y=\"-9\" width=\"4\" height=\"18\" rx=\"1\" fill=\"#14171C\"/>";
+  return "<svg viewBox=\"0 0 520 340\" role=\"img\" aria-label=\"Bản đồ đường đua gồm ba chặng, mỗi chặng ứng với một buổi học\"><rect width=\"520\" height=\"340\" fill=\"#1D3B2D\"/>" +
+    "<path id=\"trk\" d=\"" + d + "\" fill=\"none\"/><use href=\"#trk\" fill=\"none\" stroke=\"#D6342B\" stroke-width=\"34\" stroke-linejoin=\"round\"/><use href=\"#trk\" fill=\"none\" stroke=\"#fff\" stroke-width=\"34\" stroke-dasharray=\"14 14\" stroke-linejoin=\"round\"/>" +
+    "<use href=\"#trk\" fill=\"none\" stroke=\"#2C3039\" stroke-width=\"26\" stroke-linejoin=\"round\"/><use href=\"#trk\" fill=\"none\" stroke=\"#fff\" stroke-opacity=\".7\" stroke-width=\"2\" stroke-dasharray=\"8 10\"/>" +
+    "<g class=\"cp\" data-f=\"0\">" + chk + "</g>" + cp(0.2, 1, "BUỔI 1") + cp(0.5, 2, "BUỔI 2") + cp(0.79, 3, "BUỔI 3") +
+    "<g id=\"carg\">" + (RM ? "" : "<animateMotion dur=\"18s\" repeatCount=\"indefinite\" rotate=\"auto\"><mpath href=\"#trk\"/></animateMotion>") + car + "</g></svg>";
+}
+function placeTrack() {
+  const p = $("#trk"); if (!p || !p.getTotalLength) return; const L = p.getTotalLength();
+  $$(".cp").forEach(g => { const pt = p.getPointAtLength(L * parseFloat(g.dataset.f)); g.setAttribute("transform", "translate(" + pt.x.toFixed(1) + " " + pt.y.toFixed(1) + ")"); });
+  const car = $("#carg"); if (car && RM) { const pt = p.getPointAtLength(L * 0.06); car.setAttribute("transform", "translate(" + pt.x.toFixed(1) + " " + pt.y.toFixed(1) + ")"); }
+}
+function Home() {
+  const nq = CH.reduce((n, c) => n + c.quiz.length, 0), np = CH.reduce((n, c) => n + c.practice.length, 0);
+  const flow = [["Chọn bài học", "Mỗi chặng ứng với một buổi học."], ["Đọc kiến thức", "Khởi động: bài đọc ngắn có ví dụ và kiểm tra nhanh."], ["Làm bài thực hành", "Chạy thử: phân loại, tìm lỗi, chọn cách sửa."], ["Kiểm tra bằng cuộc đua", "Đua chính: lái xe qua cổng có đáp án đúng."], ["Xem kết quả và giải thích", "Bục nhận giải: điểm số và lời giải từng câu."], ["Sang chặng tiếp theo", "Hoàn thành chặng 3 là hoàn thành khóa học."]];
+  return "<section class=\"hero\"><div class=\"wrap hero-grid\"><div><span class=\"eyebrow\">Học phần SSA101 · Learning Skills</span><h1>Lập kế hoạch <em>học tập</em></h1>" +
+    "<p class=\"lede\">Ba chặng đua, ba buổi học. Đọc kiến thức, luyện tập, rồi lái xe qua các cổng đáp án để kiểm tra bản thân. Học xong là bạn biết đặt mục tiêu SMART, xếp ưu tiên và điều chỉnh kế hoạch khi có việc phát sinh.</p>" +
+    "<div class=\"cta-row\"><button class=\"btn primary lg\" data-act=\"go\" data-to=\"chang-1\">Bắt đầu chặng 1</button><button class=\"btn lg\" data-act=\"scrollTo\" data-id=\"gioi-thieu\">Xem giới thiệu khóa học</button></div>" +
+    "<div class=\"hero-meta\"><div><b>3</b><span>buổi học, 180 phút</span></div><div><b>" + np + "</b><span>bài thực hành</span></div><div><b>" + nq + "</b><span>câu hỏi đua</span></div><div><b>" + DOCS.length + "</b><span>tài liệu mẫu</span></div></div></div>" +
+    "<div class=\"track-card\"><div class=\"cap\"><span>Giải đua StudyPlan</span><span>3 chặng</span></div>" + trackSVG() + "</div></div></section>" +
+    "<section class=\"sec alt\" id=\"gioi-thieu\"><div class=\"wrap\"><div class=\"sec-head\"><span class=\"eyebrow\">Giới thiệu khóa học</span><h2>Một kế hoạch tốt bắt đầu từ việc hiểu mình</h2><p class=\"lede\">StudyPlan là website học trực tuyến theo đúng ba buổi học của dự án KDOT. Mỗi chặng có phần đọc ngắn, bài thực hành và một vòng đua để kiểm tra mức hiểu bài.</p></div>" +
+    "<div class=\"goals\"><div class=\"card flat\"><h4>Bạn sẽ hiểu</h4><p>Vì sao nhiều sinh viên trì hoãn, mất phương hướng và học dồn. Khảo sát của nhóm KDOT cho thấy 65,8% vướng ở quản lý thời gian và 63,2% vướng ở phương pháp tự học.</p></div>" +
+    "<div class=\"card flat\"><h4>Bạn sẽ làm được</h4><p>Lập bảng SWOT cá nhân, viết mục tiêu SMART, xếp việc theo ma trận ưu tiên, học theo khoảng thời gian 25/5 và điều chỉnh kế hoạch khi bị chậm.</p></div>" +
+    "<div class=\"card flat\"><h4>Bạn sẽ mang đi</h4><p>Thư viện " + DOCS.length + " tài liệu mẫu: bảng SWOT, phiếu SMART, mẫu kế hoạch tuần, thẻ phương pháp tự học và phiếu góp ý đồng đẳng.</p></div></div></div></section>" +
+    "<section class=\"sec\"><div class=\"wrap\"><div class=\"sec-head\"><span class=\"eyebrow\">Chọn bài học</span><h2>Ba chặng, đi theo thứ tự</h2></div><div class=\"stages\">" +
+    CH.map(c => "<article class=\"stage\"><div class=\"row\"><span class=\"plate\">" + c.no + "</span><span class=\"chip\">" + c.min + " phút</span><span class=\"chip\">" + c.topics.length + " mục · " + c.practice.length + " bài tập · " + c.quiz.length + " câu đua</span></div><h3>" + c.title + "</h3><p class=\"muted small\">" + c.goal + "</p><ul>" + c.topics.map(t => "<li>" + t.title + "</li>").join("") + "</ul><button class=\"btn primary\" data-act=\"go\" data-to=\"" + c.hash + "\">Vào chặng " + c.id + "</button></article>").join("") + "</div></div></section>" +
+    "<section class=\"sec alt\"><div class=\"wrap\"><div class=\"sec-head\"><span class=\"eyebrow\">Cách học trên StudyPlan</span><h2>Mỗi chặng đi qua sáu bước</h2></div><ol class=\"flow\">" + flow.map(f => "<li><b>" + f[0] + "</b><span>" + f[1] + "</span></li>").join("") + "</ol></div></section>" +
+    "<section class=\"sec\"><div class=\"wrap\"><div class=\"card row\" style=\"justify-content:space-between\"><div><h3 style=\"font-size:28px\">Thư viện tài liệu học tập</h3><p class=\"muted\">Mẫu SWOT, SMART, kế hoạch tuần, phiếu góp ý, bảng thuật ngữ và danh sách nguồn tham khảo.</p></div><button class=\"btn\" data-act=\"go\" data-to=\"thu-vien\">Mở thư viện</button></div></div></section>";
+}
+ACT.scrollTo = el => { const t = $("#" + el.dataset.id); if (t) t.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); };
+
+/* ----- Thư viện tài liệu ----- */
+function Library() {
+  return "<div class=\"wrap\" style=\"padding-block:34px 20px\"><header class=\"lh\" style=\"flex-direction:column;gap:10px\"><span class=\"eyebrow\">Thư viện</span><h1>Tài liệu học tập</h1><p>Các mẫu bạn có thể xem, sao chép hoặc tải về để dùng khi tự lập kế hoạch. Bấm “Xem” để mở nội dung.</p></header>" +
+    "<div class=\"docs\">" + DOCS.map(d => {
+      const open = S.doc === d.id;
+      return "<article class=\"doc\"><div class=\"doc-h\"><div class=\"tt\"><h3>" + d.title + "</h3><p>" + d.desc + "</p></div><div class=\"row\"><button class=\"btn sm\" data-act=\"docOpen\" data-id=\"" + d.id + "\" aria-expanded=\"" + open + "\">" + (open ? "Đóng" : "Xem") + "</button><button class=\"btn sm ghost\" data-act=\"docCopy\" data-id=\"" + d.id + "\">Sao chép</button>" + (DL ? "<button class=\"btn sm ghost\" data-act=\"docSave\" data-id=\"" + d.id + "\">Tải về</button>" : "") + "</div></div>" +
+        (open ? "<div class=\"doc-b\"><div class=\"md\">" + mdToHtml(d.md) + "</div></div>" : "") + "</article>";
+    }).join("") + "</div>" +
+    "<div class=\"sec-head\" style=\"margin-top:44px\"><span class=\"eyebrow\">Hình và sơ đồ</span><h2 style=\"font-size:34px;font-weight:800\">Sơ đồ nhanh</h2></div>" +
+    "<div class=\"grid\" style=\"grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))\">" + ["swot", "matrix", "loop", "curve"].map(k => "<figure class=\"fig card flat\" style=\"margin:0;max-width:none\">" + FIG[k]() + "</figure>").join("") + "</div>" +
+    "<p class=\"muted small\" style=\"margin-top:10px;max-width:70ch\">Đường quên chỉ là hình minh họa cho ý tưởng ôn tập cách quãng, không phải số liệu đo được.</p>" +
+    "<div class=\"sec-head\" style=\"margin-top:44px\"><span class=\"eyebrow\">Nguồn tham khảo</span><h2 style=\"font-size:34px;font-weight:800\">Kiến thức mở rộng đến từ đâu</h2><p class=\"muted small\">Nguồn có liên kết đã được đối chiếu với trang gốc khi soạn nội dung. Các nguồn còn lại là tài liệu kinh điển, chưa được mở lại bản gốc; hãy kiểm tra trước khi trích dẫn trong bài nộp.</p></div>" +
+    "<ol class=\"srcs\">" + Object.keys(SRC).map(k => "<li>" + esc(SRC[k].t) + (SRC[k].u ? " <a href=\"" + SRC[k].u + "\" target=\"_blank\" rel=\"noopener\">" + SRC[k].ul + "</a>" : "") + "</li>").join("") + "</ol></div>";
+}
+ACT.docOpen = el => { S.doc = S.doc === el.dataset.id ? null : el.dataset.id; render(); };
+const docOf = id => DOCS.find(d => d.id === id);
+ACT.docCopy = el => copyText(docOf(el.dataset.id).md);
+ACT.docSave = el => {
+  const d = docOf(el.dataset.id); if (!DL) return;
+  DL.save({ filename: "studyplan-" + d.id + ".md", data: d.md }).then(() => toast("Đã lưu tài liệu."), e => { if (!e || e.code !== "declined") toast("Không tải về được trong cửa sổ này. Hãy dùng nút Sao chép."); });
+};
+
+/* ----- Hoàn thành khóa học ----- */
+function Finish() {
+  const done = CH.filter(c => S.res[c.id]), all = done.length === CH.length;
+  const total = done.reduce((n, c) => n + S.res[c.id].score, 0), avg = done.length ? Math.round(total / done.length) : 0;
+  const cards = CH.map(c => { const r = S.res[c.id]; return "<div class=\"card\"><span class=\"eyebrow\">Chặng " + c.id + " · " + c.short + "</span>" + (r ? "<b>" + r.score + "<small style=\"font-size:.4em\"> / 100</small></b><span class=\"chip " + (r.rank === 1 ? "paint" : "") + "\">Hạng " + r.rank + " · " + r.correct + "/" + r.total + " câu đúng</span><div class=\"row\"><button class=\"btn sm\" data-act=\"go\" data-to=\"" + c.hash + "-ket-qua\">Xem lời giải</button><button class=\"btn sm ghost\" data-act=\"go\" data-to=\"" + c.hash + "-kiem-tra\">Đua lại</button></div>" : "<b>Chưa đua</b><span class=\"muted small\">Chặng này chưa có kết quả trong phiên này.</span><button class=\"btn sm primary\" data-act=\"go\" data-to=\"" + c.hash + "\">Vào chặng " + c.id + "</button>") + "</div>"; }).join("");
+  return "<div class=\"wrap\" style=\"padding-block:34px 20px\"><section class=\"fin asphalt\"><div><span class=\"eyebrow\" style=\"color:var(--on-asphalt-2)\">" + (all ? "Hoàn thành khóa học" : "Gần về đích") + "</span><h1>" + (all ? "Về <em>đích</em>!" : "Còn <em>" + (CH.length - done.length) + "</em> chặng") + "</h1>" +
+    "<p>" + (all ? "Bạn đã đi hết ba chặng với điểm trung bình " + avg + "/100. Sự thay đổi lớn bắt đầu từ những thói quen nhỏ mỗi ngày." : "Hoàn thành cả ba chặng để kết thúc khóa học. Bạn có thể đua theo thứ tự bất kỳ.") + "</p></div>" + trophySVG() + "</section>" +
+    "<div class=\"scoreline\" style=\"margin-top:22px\">" + cards + "</div>" +
+    "<section class=\"card\" style=\"margin-top:22px;max-width:820px\"><h3 style=\"font-size:30px;margin-bottom:10px\">Ba việc nên làm ngay hôm nay</h3><ol class=\"prose\" style=\"padding-left:22px\"><li>Điền bảng SWOT cá nhân, mỗi ô ít nhất hai ý.</li><li>Viết ba mục tiêu SMART: học tập, kỹ năng, ngoại khóa.</li><li>Lập kế hoạch tuần tới theo ma trận ưu tiên, có khối tự học 25/5 và ít nhất một khối dự phòng.</li></ol>" +
+    "<div class=\"row\" style=\"margin-top:14px\"><button class=\"btn primary\" data-act=\"go\" data-to=\"thu-vien\">Mở mẫu trong thư viện</button><button class=\"btn ghost\" data-act=\"go\" data-to=\"trang-chu\">Về trang chủ</button></div></section>" +
+    "<p class=\"muted small\" style=\"margin-top:14px\">StudyPlan không có tài khoản và không lưu điểm của bạn. Tải lại trang là bắt đầu lại từ đầu.</p></div>";
+}
+/* ===== Trang bài học, bài thực hành, kết quả ===== */
+const STEPS = [["doc", "", "Đọc kiến thức", "Khởi động"], ["thuc-hanh", "-thuc-hanh", "Thực hành", "Chạy thử"], ["kiem-tra", "-kiem-tra", "Kiểm tra", "Đua chính"], ["ket-qua", "-ket-qua", "Kết quả", "Bục nhận giải"]];
+const QREG = {};
+const co = (cls, t, txt, src) => "<div class=\"callout " + cls + "\"><b class=\"t\">" + t + "</b><p>" + rich(txt) + "</p>" + (src ? "<span class=\"src\">" + src + "</span>" : "") + "</div>";
+
+function quick(key, q) {
+  QREG[key] = q; const a = S.chk[key], done = a !== undefined;
+  return "<div class=\"qc\" data-card=\"qc\" data-k=\"" + key + "\"><span class=\"eyebrow\">Kiểm tra nhanh</span><p><b>" + q.q + "</b></p><div class=\"opts col\">" +
+    q.o.map((o, i) => "<button class=\"opt" + (done && i === q.a ? " correct" : "") + (done && i === a && a !== q.a ? " wrong" : "") + "\" data-act=\"qc\" data-k=\"" + key + "\" data-i=\"" + i + "\"" + (done ? " disabled" : "") + ">" + o + "</button>").join("") + "</div>" +
+    (done ? "<div class=\"fb " + (a === q.a ? "ok" : "no") + "\" role=\"status\"><b>" + (a === q.a ? "Chính xác." : "Chưa đúng.") + "</b> " + q.why + "</div>" : "") + "</div>";
+}
+ACT.qc = el => { S.chk[el.dataset.k] = +el.dataset.i; const old = el.closest("[data-card=qc]"); old.outerHTML = quick(el.dataset.k, QREG[el.dataset.k]); };
+
+function blk(n, tp, bi, b) {
+  const k = b[0];
+  if (k === "p") return "<p>" + rich(b[1]) + "</p>";
+  if (k === "h3") return "<h3>" + b[1] + "</h3>";
+  if (k === "ul" || k === "ol") return "<" + k + ">" + b[1].map(x => "<li>" + rich(x) + "</li>").join("") + "</" + k + ">";
+  if (k === "ex") return co("ex", "Ví dụ", b[1]);
+  if (k === "tip") return co("tip", "Mẹo", b[1]);
+  if (k === "warn") return co("warn", "Lưu ý", b[1]);
+  if (k === "more") return co("more", "Kiến thức mở rộng", b[1], "Nguồn: " + (b[2] || []).map(key => { const s = SRC[key]; return !s ? "" : s.u ? "<a href=\"" + s.u + "\" target=\"_blank\" rel=\"noopener\">" + s.s + "</a>" : s.s; }).join("; ") + ". Danh sách đầy đủ trong Thư viện.");
+  if (k === "fig") return "<figure class=\"fig\">" + FIG[b[1]]() + "<figcaption>" + b[2] + "</figcaption></figure>";
+  if (k === "html") return b[1];
+  if (k === "table") return "<div class=\"tw\"><table><thead><tr>" + b[1].map(h => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>" + b[2].map(r => "<tr>" + r.map(c => "<td>" + rich(c) + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>";
+  if (k === "go") return "<div><button class=\"btn sm\" data-act=\"go\" data-to=\"" + b[2] + "\">" + b[1] + "</button></div>";
+  if (k === "check") return quick(n + "." + tp + "." + bi, b[1]);
+  return "";
+}
+const nextBar = (txt, to, label) => "<div class=\"nextbar\"><span>" + txt + "</span><button class=\"btn primary\" data-act=\"go\" data-to=\"" + to + "\">" + label + "</button></div>";
+
+/* ----- Bài thực hành ----- */
+function practiceHTML(n, i) {
+  const c = CH[n - 1], p = c.practice[i], k = n + "." + i, st = S.prac[k] || (S.prac[k] = {});
+  const d = "data-n=\"" + n + "\" data-i=\"" + i + "\"";
+  let h = "<section class=\"card pr\" id=\"pr-" + i + "\" data-card=\"pr\" " + d + "><span class=\"eyebrow\">Bài " + (i + 1) + " trên " + c.practice.length + "</span><h3>" + p.title + "</h3><p class=\"intro\">" + rich(p.intro) + "</p>";
+  const reset = "<button class=\"btn sm ghost\" data-act=\"prReset\" " + d + ">Làm lại</button>";
+  const fb = (ok, why) => "<div class=\"fb " + (ok ? "ok" : "no") + "\" role=\"status\"><b>" + (ok ? "Chính xác." : "Chưa đúng.") + "</b> " + why + "</div>";
+  if (p.t === "sort") {
+    const a = st.a || (st.a = {}), cnt = Object.keys(a).length, ok = Object.keys(a).filter(j => a[j] === p.items[j][1]).length;
+    h += p.items.map((it, j) => {
+      const sel = a[j], done = sel !== undefined;
+      return "<div class=\"qrow\"><p>" + (j + 1) + ". " + it[0] + "</p><div class=\"cats\">" + p.cats.map((cat, ci) => "<button class=\"opt" + (done && ci === it[1] ? " correct" : "") + (done && ci === sel && sel !== it[1] ? " wrong" : "") + "\" data-act=\"sortPick\" " + d + " data-j=\"" + j + "\" data-c=\"" + ci + "\"" + (done ? " disabled" : "") + ">" + cat + "</button>").join("") + "</div>" + (done ? fb(sel === it[1], it[2]) : "") + "</div>";
+    }).join("") + "<div class=\"row\"><span class=\"chip " + (cnt === p.items.length ? "ok" : "") + "\">Đã làm " + cnt + "/" + p.items.length + " · đúng " + ok + "</span>" + (cnt ? reset : "") + "</div>";
+  } else if (p.t === "choice") {
+    const pick = st.pick, done = pick !== undefined;
+    h += "<p><b>" + p.q + "</b></p><div class=\"opts col\">" + p.o.map((o, j) => "<button class=\"opt" + (done && j === p.a ? " correct" : "") + (done && j === pick && pick !== p.a ? " wrong" : "") + "\" data-act=\"chPick\" " + d + " data-j=\"" + j + "\"" + (done ? " disabled" : "") + ">" + o + "</button>").join("") + "</div>" + (done ? fb(pick === p.a, p.why) + "<div>" + reset + "</div>" : "");
+  } else {
+    const sel = st.sel || (st.sel = []), done = !!st.done, okAll = sel.length === p.a.length && p.a.every(x => sel.includes(x));
+    h += "<p><b>" + p.q + "</b></p><div class=\"opts col\">" + p.o.map((o, j) => { const on = sel.includes(j), ok = p.a.includes(j); return "<label class=\"opt" + (done && ok ? " correct" : "") + (done && on && !ok ? " wrong" : "") + (!done && on ? " sel" : "") + "\"><input type=\"checkbox\" data-act=\"multiTog\" " + d + " data-j=\"" + j + "\"" + (on ? " checked" : "") + (done ? " disabled" : "") + "><span>" + o + "</span></label>"; }).join("") + "</div>" +
+      (done ? fb(okAll, p.why) + "<div>" + reset + "</div>" : "<div><button class=\"btn sm primary\" data-act=\"multiGo\" " + d + ">Kiểm tra</button></div>");
+  }
+  return h + "</section>";
+}
+const repaint = el => { const n = +el.dataset.n, i = +el.dataset.i; $("#pr-" + i).outerHTML = practiceHTML(n, i); };
+const pst = el => S.prac[el.dataset.n + "." + el.dataset.i] || (S.prac[el.dataset.n + "." + el.dataset.i] = {});
+ACT.sortPick = el => { const st = pst(el); (st.a || (st.a = {}))[el.dataset.j] = +el.dataset.c; repaint(el); };
+ACT.chPick = el => { pst(el).pick = +el.dataset.j; repaint(el); };
+ACT.multiTog = el => { const st = pst(el), j = +el.dataset.j, s = st.sel || (st.sel = []); const x = s.indexOf(j); if (el.checked && x < 0) s.push(j); if (!el.checked && x >= 0) s.splice(x, 1); el.closest("label").classList.toggle("sel", el.checked); };
+ACT.multiGo = el => { const st = pst(el); if (!(st.sel || []).length) { toast("Hãy chọn ít nhất một đáp án."); return; } st.done = true; repaint(el); };
+ACT.prReset = el => { delete S.prac[el.dataset.n + "." + el.dataset.i]; repaint(el); };
+ACT.toc = (el, e) => { e.preventDefault(); const t = $("#" + el.dataset.id); if (t) t.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); };
+
+/* ----- Trang chặng ----- */
+function Lesson(n, step) {
+  const c = CH[n - 1];
+  const stepper = "<ol class=\"stepper\">" + STEPS.map((s, i) => "<li><a href=\"#" + c.hash + s[1] + "\"" + (s[0] === step ? " aria-current=\"step\"" : "") + "><span class=\"sn\">" + (i + 1) + "</span><span>" + s[2] + "<small>" + s[3] + "</small></span></a></li>").join("") + "</ol>";
+  const toc = step === "doc" ? c.topics.map(t => ["tp-" + t.id, t.title]) : step === "thuc-hanh" ? c.practice.map((p, i) => ["pr-" + i, p.title]) : step === "ket-qua" ? [["rs-diem", "Điểm số"], ["rs-loi-giai", "Giải thích từng câu"]] : [["race", "Cuộc đua"]];
+  const tocH = toc.length < 2 ? "" : "<details open><summary>Mục lục</summary><nav class=\"toc\" aria-label=\"Mục lục\">" + toc.map(t => "<a href=\"#\" data-act=\"toc\" data-id=\"" + t[0] + "\">" + t[1] + "</a>").join("") + "</nav></details>";
+  let body = "";
+  if (step === "doc") {
+    body = co("tip", "Sau chặng này bạn sẽ", "<br>" + c.outcomes.map(o => "• " + o).join("<br>")) +
+      c.topics.map(t => "<section class=\"topic\" id=\"tp-" + t.id + "\"><h2>" + t.title + "</h2><div class=\"prose\">" + t.body.map((b, bi) => blk(n, t.id, bi, b)).join("") + "</div></section>").join("") +
+      nextBar("Đọc xong? Sang bài thực hành để vận dụng ngay.", c.hash + "-thuc-hanh", "Làm bài thực hành");
+  } else if (step === "thuc-hanh") {
+    body = "<div class=\"prose\"><p>Có " + c.practice.length + " bài tập ứng dụng. Bạn nhận phản hồi ngay sau mỗi câu trả lời và có thể làm lại.</p></div>" + c.practice.map((p, i) => practiceHTML(n, i)).join("") + nextBar("Sẵn sàng chưa? Vào đường đua để kiểm tra kiến thức.", c.hash + "-kiem-tra", "Đến vạch xuất phát");
+  } else if (step === "kiem-tra") body = RaceShell(n);
+  else body = Results(n);
+  return "<div class=\"wrap\"><div class=\"lesson\"><aside class=\"rail\"><div><h4>Chặng " + n + "</h4>" + stepper + "</div>" + tocH + "</aside><div><header class=\"lh" + (step === "kiem-tra" ? " compact" : "") + "\"><span class=\"plate\">" + c.no + "</span><div><span class=\"eyebrow\">Buổi " + n + " · " + c.min + " phút</span><h1>" + c.title + "</h1><p>" + c.goal + "</p></div></header>" + body + "</div></div></div>";
+}
+
+/* ----- Khung cuộc đua (trò chơi gắn vào sau khi dựng) ----- */
+function RaceShell(n) {
+  return "<div class=\"race\" id=\"race\"><section class=\"pit asphalt\" id=\"pit\"></section><div class=\"cvw\"><div class=\"cv\"><canvas id=\"gc\" aria-label=\"Đường đua\"></canvas><div class=\"cv-ov\" id=\"ov\"></div></div>" +
+    "<div class=\"ctrls\"><button class=\"btn\" id=\"bL\" aria-label=\"Sang làn trái\">◀ Trái</button><button class=\"btn\" id=\"bR\" aria-label=\"Sang làn phải\">Phải ▶</button><button class=\"btn primary\" id=\"bGo\">Chốt</button></div><div class=\"row\"><button class=\"btn sm ghost\" id=\"bPause\">Tạm dừng</button></div></div>" +
+    "<div class=\"gopts\" id=\"gopts\" role=\"group\" aria-label=\"Các đáp án\"></div><section class=\"tower asphalt\" id=\"tower\"></section>" +
+    "<div class=\"help\"><p><b>Cách chơi.</b> Chọn làn có đáp án đúng bằng phím <kbd>←</kbd> <kbd>→</kbd> hoặc <kbd>1</kbd> đến <kbd>4</kbd>, vuốt trên đường đua, hoặc bấm vào đáp án. Nhấn <kbd>Space</kbd> hay nút “Chốt” để tăng tốc về cổng. Mỗi chặng có 10 câu, mỗi câu 10 điểm.</p><label><input type=\"checkbox\" id=\"relax\"" + (RM ? " checked" : "") + "> Chế độ thong thả: cổng dừng lại chờ đến khi bạn chốt</label></div></div>";
+}
+function onRaceDone(n, r) { S.res[n] = r; go(CH[n - 1].hash + "-ket-qua"); }
+
+/* ----- Kết quả và giải thích ----- */
+const RMSG = ["Bạn đã làm chủ chặng này.", "Chỉ cần xem lại vài câu là lên hạng nhất.", "Hãy đọc lại các mục bị sai rồi đua lại.", "Bạn đã về đích. Hãy đọc lại các mục gợi ý bên dưới rồi đua lại."];
+function Results(n) {
+  const c = CH[n - 1], r = S.res[n];
+  if (!r) return "<div class=\"card\" id=\"rs-diem\"><h3 style=\"font-size:28px\">Bạn chưa đua chặng này</h3><p class=\"muted\">Điểm và lời giải sẽ hiện ở đây sau khi bạn về đích.</p><div class=\"row\" style=\"margin-top:12px\"><button class=\"btn primary\" data-act=\"go\" data-to=\"" + c.hash + "-kiem-tra\">Đến vạch xuất phát</button></div></div>";
+  const wrong = r.rows.filter(x => !x.ok), list = S.filter === "wrong" ? wrong : r.rows;
+  return "<section class=\"res-hero asphalt\" id=\"rs-diem\"><div><span class=\"eyebrow\" style=\"color:var(--on-asphalt-2)\">Chặng " + n + " · Hạng " + r.rank + "</span><h2>" + ["Về nhất", "Về nhì", "Về ba", "Về đích"][r.rank - 1] + "</h2><div class=\"big\">" + r.score + "<small>/ 100</small></div><p>" + r.correct + " trên " + r.total + " câu đúng. " + RMSG[r.rank - 1] + "</p></div><div class=\"podium\">" + podiumSVG(r.rank) + "</div></section>" +
+    "<div class=\"row\" style=\"margin-top:16px\"><button class=\"btn primary lg\" data-act=\"go\" data-to=\"" + nextHash(n) + "\">" + (n < 3 ? "Sang chặng " + (n + 1) : "Hoàn thành khóa học") + "</button><button class=\"btn\" data-act=\"go\" data-to=\"" + c.hash + "-kiem-tra\">Đua lại</button></div>" +
+    "<div class=\"sec-head\" id=\"rs-loi-giai\" style=\"margin:36px 0 14px\"><h2 style=\"font-size:36px;font-weight:800\">Giải thích từng câu</h2><div class=\"seg\" role=\"group\" aria-label=\"Lọc câu hỏi\"><button data-act=\"filter\" data-v=\"all\" aria-pressed=\"" + (S.filter !== "wrong") + "\">Tất cả (" + r.rows.length + ")</button><button data-act=\"filter\" data-v=\"wrong\" aria-pressed=\"" + (S.filter === "wrong") + "\">Câu sai (" + wrong.length + ")</button></div></div>" +
+    "<div class=\"reviews\">" + (list.length ? list.map(x => {
+      const q = c.quiz[x.q], tp = c.topics.find(t => t.id === q.tp);
+      return "<article class=\"rv " + (x.ok ? "ok" : "no") + "\"><div class=\"row\"><span class=\"chip " + (x.ok ? "ok" : "no") + "\">Câu " + (x.q + 1) + " · " + (x.ok ? "Đúng" : "Sai") + "</span></div><h4>" + q.q + "</h4><div class=\"ans\"><span>Bạn chọn: <b>" + (x.pick >= 0 ? q.o[x.pick] : "Không chọn") + "</b></span>" + (x.ok ? "" : "<span>Đáp án đúng: <b>" + q.o[q.a] + "</b></span>") + "</div><p class=\"why\">" + q.why + "</p>" + (!x.ok && tp ? "<div><button class=\"btn sm\" data-act=\"reread\" data-to=\"" + c.hash + "\" data-tp=\"" + tp.id + "\">Đọc lại: " + tp.title + "</button></div>" : "") + "</article>";
+    }).join("") : "<div class=\"card\"><p><b>Bạn trả lời đúng cả " + r.total + " câu.</b> Không có câu sai để xem lại.</p></div>") + "</div>" +
+    "<p class=\"muted small\" style=\"margin-top:16px\">Điểm chỉ hiển thị trong phiên này và không được lưu lại.</p>";
+}
+ACT.filter = el => { S.filter = el.dataset.v; render(); const t = $("#rs-loi-giai"); if (t) t.scrollIntoView({ block: "start" }); };
+ACT.reread = el => { S.pend = el.dataset.tp; go(el.dataset.to); };
+/* ===== Trò chơi đua xe: lái vào làn có đáp án đúng ===== */
+const Game = (() => {
+  const W = 360, H = 450, YH = 120, RW = 150, C = 10, TOPT = 0.86, ZHIT = C / TOPT, CARY = YH + TOPT * (H - YH), SL = 4, CX = W / 2;
+  const Z0 = 190, ZHOLD = 34, QN = 10, LCOL = ["#FFC400", "#52B6FF", "#C69BFF", "#FF9A57"], LET = "ABCD";
+  const RIV = [{ n: "Xe Xanh", no: "07", c: "#4DA3FF", f: 9, seed: 1.3 }, { n: "Xe Tím", no: "23", c: "#B58CFF", f: 7, seed: 2.9 }, { n: "Xe Cam", no: "88", c: "#FF9A57", f: 5, seed: 4.1 }];
+  const FONT = "'Barlow Condensed','Arial Narrow',sans-serif";
+  let G = null;
+  const laneN = (k, nl) => -1 + (2 * k + 1) / nl;
+  const shuf = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = b[i]; b[i] = b[j]; b[j] = t; } return b; };
+  const relax = () => !!(G && G.rx && G.rx.checked);
+  function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); c.fill(); }
+
+  function mkStands() {
+    const o = document.createElement("canvas"); o.width = W; o.height = YH; const c = o.getContext("2d"); let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    c.fillStyle = "#222732"; c.fillRect(0, 0, W, YH); c.fillStyle = "#2A303C"; c.fillRect(0, YH - 76, W, 76);
+    for (let x = 0; x < W; x += 24) {
+      const h = 26 + rnd() * 34; c.fillStyle = "#343B49"; c.fillRect(x, YH - h, 22, h);
+      for (let k = 0; k < 14; k++) { c.fillStyle = ["#FFC400", "#52B6FF", "#FF7A6B", "#EDEFF3", "#8E7CFF"][Math.floor(rnd() * 5)]; c.globalAlpha = 0.55; c.fillRect(x + 1 + rnd() * 19, YH - h + 3 + rnd() * (h - 6), 2, 2); }
+    }
+    c.globalAlpha = 1; c.fillStyle = "#14171C"; c.fillRect(0, YH - 3, W, 3); return o;
+  }
+
+  function start(root, n, onDone) {
+    destroy(); const cv = $("#gc"); if (!cv) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1); cv.width = W * dpr; cv.height = H * dpr;
+    const ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    G = { n: n, ch: CH[n - 1], onDone: onDone, cv: cv, ctx: ctx, phase: "intro", paused: false, t: 0, dist: 0, v: 6, i: -1, correct: 0, score: 0, streak: 0, rows: [], cur: null, gate: null, fin: null, lane: 1, px: 0, nl: 3, locked: false,
+      lightsT: 0, shake: 0, spin: 0, flash: "#fff", flashT: 0, goT: 0, vtimer: 0, doneT: 0, msg: "", pos: 0, off: [], p0: null, bar: null, rx: $("#relax"), stands: mkStands(), last: performance.now(), raf: 0 };
+    G.riv = RIV.map(r => { const h = []; let prev = 0; for (let k = 0; k <= QN; k++) { let v = Math.round(r.f * k / QN + (k < QN ? Math.sin(k * 1.7 + r.seed) * 0.7 : 0)); v = Math.min(Math.max(v, prev), k); if (k === QN) v = r.f; h.push(v); prev = v; } return Object.assign({}, r, { h: h }); });
+    $("#pit").setAttribute("aria-live", "polite");
+    bind(); syncPit(); syncOpts(); renderTower(); overlay("intro");
+    G.raf = requestAnimationFrame(loop);
+  }
+  function destroy() { if (!G) return; cancelAnimationFrame(G.raf); G.off.forEach(f => f()); G = null; }
+
+  function bind() {
+    const on = (t, ev, fn) => { if (!t) return; t.addEventListener(ev, fn); G.off.push(() => t.removeEventListener(ev, fn)); };
+    on(document, "keydown", onKey);
+    on($("#bL"), "click", () => steer(-1)); on($("#bR"), "click", () => steer(1)); on($("#bGo"), "click", lock); on($("#bPause"), "click", togglePause);
+    on(G.cv, "pointerdown", e => { if (G) G.p0 = { x: e.clientX, y: e.clientY }; });
+    on(G.cv, "pointerup", pu);
+    on(document, "visibilitychange", () => { if (document.hidden && G && G.phase !== "intro" && G.phase !== "done" && !G.paused) togglePause(); });
+    on($("#gopts"), "click", e => { const b = e.target.closest("[data-lane]"); if (b) setLane(+b.dataset.lane); });
+    on($("#pit"), "click", e => { if (e.target.closest("[data-skip]")) skip(); else if (e.target.closest("[data-go=start]")) begin(); });
+    on($("#ov"), "click", e => { const b = e.target.closest("[data-go]"); if (!b) return; if (b.dataset.go === "start") begin(); else togglePause(); });
+  }
+  function onKey(e) {
+    if (!G || e.ctrlKey || e.metaKey || e.altKey) return;
+    const inBtn = /^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(e.target.tagName), k = e.key;
+    if (k === "ArrowLeft" || k === "a" || k === "A") { steer(-1); e.preventDefault(); }
+    else if (k === "ArrowRight" || k === "d" || k === "D") { steer(1); e.preventDefault(); }
+    else if (k >= "1" && k <= "4") setLane(+k - 1);
+    else if ((k === " " || k === "Enter") && !inBtn) { e.preventDefault(); if (G.phase === "ask") lock(); else if (G.phase === "verdict") skip(); else if (G.phase === "intro") begin(); }
+    else if (k === "Escape" || k === "p" || k === "P") togglePause();
+  }
+  function pu(e) {
+    if (!G || !G.p0) return; const dx = e.clientX - G.p0.x, dy = e.clientY - G.p0.y; G.p0 = null;
+    if (G.phase === "verdict") { skip(); return; } if (G.phase !== "ask") return;
+    if (Math.abs(dx) > 28 && Math.abs(dx) > Math.abs(dy)) steer(dx > 0 ? 1 : -1);
+    else if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { const r = G.cv.getBoundingClientRect(); steer(e.clientX < r.left + r.width / 2 ? -1 : 1); }
+  }
+  function setLane(k) { if (!G || G.phase !== "ask" || k < 0 || k >= G.nl) return; G.lane = k; $$("#gopts .gopt").forEach((b, j) => { b.classList.toggle("on", j === k); b.setAttribute("aria-pressed", j === k); }); }
+  function steer(d) { if (G && G.phase === "ask") setLane(Math.max(0, Math.min(G.nl - 1, G.lane + d))); }
+  function lock() { if (!G || G.phase !== "ask" || G.locked || G.paused) return; G.locked = true; syncPit(); }
+  function begin() { if (!G || G.phase !== "intro") return; $("#ov").hidden = true; G.phase = "lights"; G.lightsT = 0; syncPit(); }
+  function skip() { if (G && G.phase === "verdict" && !G.paused) nextQ(); }
+  function togglePause() {
+    if (!G || G.phase === "intro" || G.phase === "done") return; G.paused = !G.paused; const ov = $("#ov");
+    if (G.paused) { ov.innerHTML = "<div class=\"box\"><h3>Tạm dừng</h3><button class=\"btn primary lg\" data-go=\"resume\">Tiếp tục</button></div>"; ov.hidden = false; $("#bPause").textContent = "Tiếp tục"; const b = ov.querySelector("button"); if (b) b.focus(); }
+    else { ov.hidden = true; $("#bPause").textContent = "Tạm dừng"; G.last = performance.now(); }
+  }
+  function overlay(mode) {
+    const ov = $("#ov"); if (mode === "intro") { ov.innerHTML = "<div class=\"box\"><h3>Chặng " + G.n + "</h3><p>" + QN + " câu hỏi. Lái vào làn có đáp án đúng rồi chốt. Đèn đỏ tắt là xuất phát.</p><button class=\"btn primary lg\" data-go=\"start\">Xuất phát</button></div>"; ov.hidden = false; }
+  }
+
+  function nextQ() {
+    G.i++; if (G.i >= QN) { G.phase = "finish"; G.fin = { z: 120 }; G.gate = null; G.cur = null; syncPit(); syncOpts(); return; }
+    const q = G.ch.quiz[G.i], order = shuf(q.o.map((_, k) => k));
+    G.cur = { qi: G.i, q: q, order: order, correct: order.indexOf(q.a), texts: order.map(k => q.o[k]) };
+    G.nl = order.length; G.lane = G.nl === 3 ? 1 : (Math.random() < 0.5 ? 1 : 2); G.locked = false; G.msg = ""; G.gate = { z: Z0, res: null }; G.phase = "ask"; syncPit(); syncOpts();
+  }
+  function hit() {
+    const cu = G.cur, ok = G.lane === cu.correct;
+    G.gate.res = { chosen: G.lane, ok: ok }; G.rows.push({ q: cu.qi, pick: cu.order[G.lane], ok: ok });
+    if (ok) { G.correct++; G.streak++; G.flash = "#2BD47D"; } else { G.streak = 0; G.flash = "#FF5B4F"; G.spin = 1; if (!RM) G.shake = 0.6; }
+    G.flashT = 1; G.score = G.correct * 10;
+    const st = standings(), now = st.findIndex(r => r.me); G.msg = now < G.pos ? "Bạn vượt lên hạng " + (now + 1) + "." : ""; G.pos = now;
+    G.phase = "verdict"; G.vtimer = 0; syncPit(); syncOpts(); renderTower();
+  }
+  function finishRace() { const score = G.correct * 10, r = { score: score, correct: G.correct, total: QN, rank: rankOf(score), rows: G.rows }, cb = G.onDone, n = G.n; destroy(); cb(n, r); }
+
+  function loop(now) {
+    if (!G) return; G.raf = requestAnimationFrame(loop);
+    const dt = Math.min(0.05, (now - G.last) / 1000); G.last = now;
+    if (!G.paused) update(dt); if (G) draw();
+  }
+  function update(dt) {
+    G.t += dt; const V = relax() ? 7 : 14, ph = G.phase; let vt = V * 0.45;
+    if (ph === "lights") vt = 0; else if (ph === "ask") vt = G.locked ? V * 2.6 : V; else if (ph === "verdict") vt = V * 1.1; else if (ph === "finish") vt = V * 2.2; else if (ph === "done") vt = V * 0.3;
+    if (ph === "ask" && !G.locked && relax() && G.gate.z <= ZHOLD + 0.05) vt = 0;
+    G.v += (vt - G.v) * Math.min(1, dt * 3); G.dist += G.v * dt;
+    G.px += (laneN(G.lane, G.nl) - G.px) * Math.min(1, dt * 9);
+    if (G.gate) G.gate.z -= G.v * dt; if (G.fin) G.fin.z -= G.v * dt;
+    G.shake = Math.max(0, G.shake - dt * 2); G.spin = Math.max(0, G.spin - dt * 1.1); G.flashT = Math.max(0, G.flashT - dt * 1.6); if (G.goT > 0) G.goT -= dt;
+    if (ph === "lights") { G.lightsT += dt; if (G.lightsT > 4.4) { G.goT = 1; nextQ(); } }
+    else if (ph === "ask") {
+      if (relax() && !G.locked && G.gate.z < ZHOLD) G.gate.z = ZHOLD;
+      if (G.gate.z <= ZHIT) hit(); else { const f = Math.max(0, Math.min(1, (G.gate.z - ZHIT) / (Z0 - ZHIT))); if (!G.bar) G.bar = $("#gbar i"); if (G.bar) G.bar.style.transform = "scaleX(" + f.toFixed(3) + ")"; }
+    } else if (ph === "verdict") { G.vtimer += dt; if (G.vtimer > 3.8) skip(); }
+    else if (ph === "finish") { if (G.fin.z <= ZHIT - 3) { G.phase = "done"; G.doneT = 0; syncPit(); } }
+    else if (ph === "done") { G.doneT += dt; if (G.doneT > 1.5) finishRace(); }
+  }
+
+  /* ----- Phần HTML bên cạnh đường đua ----- */
+  function standings() {
+    const ans = G.rows.length, rows = [{ me: true, n: "Bạn", no: "01", c: "#14171C", s: G.correct * 10, f: 99 }].concat(G.riv.map(r => ({ me: false, n: r.n, no: r.no, c: r.c, s: r.h[ans] * 10, f: r.f })));
+    return rows.sort((a, b) => b.s - a.s || (b.me ? 1 : 0) - (a.me ? 1 : 0) || b.f - a.f);
+  }
+  function renderTower() { $("#tower").innerHTML = "<h4>Bảng xếp hạng</h4>" + standings().map((r, i) => "<div class=\"tr" + (r.me ? " me" : "") + "\"><span class=\"p\">" + (i + 1) + "</span><span class=\"cl\" style=\"background:" + r.c + "\"></span><span>" + r.n + " <span class=\"mono\" style=\"opacity:.6;font-size:13px\">#" + r.no + "</span></span><span class=\"s\">" + r.s + "</span></div>").join(""); }
+  function syncPit() {
+    const el = $("#pit"); if (!el) return; G.bar = null; const ph = G.phase, cu = G.cur;
+    const hd = t => "<div class=\"hd\"><span class=\"no\">" + t + "</span><span class=\"chip\">Chuỗi đúng " + G.streak + "</span><span class=\"sc\">" + G.score + " điểm</span></div>";
+    let h;
+    if (ph === "intro") h = "<div class=\"hd\"><span class=\"no\">Chặng " + G.n + "</span><span class=\"chip\">" + QN + " câu</span></div><p class=\"q\">" + esc(G.ch.title) + ". Bạn sẽ lái qua " + QN + " cổng. Mỗi cổng có một câu hỏi, các làn A, B, C (đôi khi D) là các đáp án.</p><div><button class=\"btn primary\" data-go=\"start\">Xuất phát</button></div>";
+    else if (ph === "lights") h = "<div class=\"hd\"><span class=\"no\">Chuẩn bị</span></div><p class=\"q\">Chờ năm đèn đỏ tắt…</p>";
+    else if (ph === "ask") h = hd("Câu " + (G.i + 1) + "/" + QN) + "<p class=\"q\">" + esc(cu.q.q) + "</p><div class=\"gbar\" id=\"gbar\" aria-hidden=\"true\"><i></i></div><p class=\"small\" style=\"color:var(--on-asphalt-2)\">" + (G.locked ? "Đã chốt. Xe đang tăng tốc về cổng." : "Chọn làn rồi nhấn Space hoặc nút Chốt. Cổng cũng tự đến sau ít giây.") + "</p>";
+    else if (ph === "verdict") { const row = G.rows[G.rows.length - 1]; h = hd("Câu " + (G.i + 1) + "/" + QN) + "<div class=\"verdict\"><span class=\"v " + (row.ok ? "ok" : "no") + "\">" + (row.ok ? "Đúng" : "Chưa đúng") + "</span><p>" + (row.ok ? "" : "Đáp án đúng là làn <b>" + LET[cu.correct] + "</b>. ") + esc(cu.q.why) + (G.msg ? " <b>" + G.msg + "</b>" : "") + "</p><div><button class=\"btn sm primary\" data-skip=\"1\">" + (G.i + 1 >= QN ? "Về đích" : "Câu tiếp") + "</button></div></div>"; }
+    else h = "<div class=\"hd\"><span class=\"no\">Vạch đích</span><span class=\"sc\">" + G.score + " điểm</span></div><p class=\"q\">Bạn đã về đích. Đang tính điểm…</p>";
+    el.innerHTML = h;
+  }
+  function syncOpts() {
+    const el = $("#gopts"); if (!el) return;
+    if (!G.cur || G.phase === "intro" || G.phase === "lights" || G.phase === "finish" || G.phase === "done") { el.innerHTML = ""; return; }
+    const dis = G.phase !== "ask", res = G.gate && G.gate.res;
+    el.innerHTML = G.cur.texts.map((t, k) => { let cls = "gopt"; if (!dis && k === G.lane) cls += " on"; if (dis) { if (k === G.cur.correct) cls += " good"; else if (res && k === res.chosen) cls += " bad"; }
+      return "<button class=\"" + cls + "\" data-lane=\"" + k + "\"" + (dis ? " disabled" : "") + " aria-pressed=\"" + (k === G.lane) + "\"><span class=\"lt lane" + k + "\">" + LET[k] + "</span><span>" + esc(t) + "</span></button>"; }).join("");
+  }
+
+  /* ----- Vẽ cảnh đua (góc nhìn từ sau xe) ----- */
+  function draw() {
+    const c = G.ctx, nl = G.nl; c.save();
+    if (G.shake > 0 && !RM) c.translate((Math.random() - 0.5) * 8 * G.shake, (Math.random() - 0.5) * 6 * G.shake);
+    c.drawImage(G.stands, 0, 0, W, YH);
+    for (let y = YH; y < H + 4; y += 2) {
+      const t = (y - YH) / (H - YH); if (t < 0.012) continue;
+      const z = C / t, odd = Math.floor((z + G.dist) / SL) & 1, half = RW * t, kb = Math.max(1, 11 * t);
+      c.fillStyle = odd ? "#1F5A42" : "#1B5039"; c.fillRect(-10, y, W + 20, 2);
+      c.fillStyle = odd ? "#D6342B" : "#F2F3F5"; c.fillRect(CX - half - kb, y, kb, 2); c.fillRect(CX + half, y, kb, 2);
+      c.fillStyle = odd ? "#32363F" : "#2D313A"; c.fillRect(CX - half, y, half * 2, 2);
+      if (!odd) { c.fillStyle = "rgba(255,255,255,.85)"; const lw = Math.max(1, 3.2 * t); for (let k = 1; k < nl; k++) c.fillRect(CX - half + 2 * half * k / nl - lw / 2, y, lw, 2); }
+    }
+    if (G.fin) drawFinish(c);
+    const behind = G.gate && G.gate.z <= ZHIT; if (G.gate && !behind) drawGate(c);
+    drawCar(c); if (behind) drawGate(c);
+    if (G.v > 24 && !RM) { c.strokeStyle = "rgba(255,255,255,.2)"; c.lineWidth = 2; for (let k = 0; k < 12; k++) { const x = (k * 97) % W, y = (G.t * 900 + k * 61) % H; c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + 34); c.stroke(); } }
+    if (G.flashT > 0) { c.globalAlpha = G.flashT * 0.22; c.fillStyle = G.flash; c.fillRect(0, 0, W, H); c.globalAlpha = 1; }
+    if (G.phase === "lights") { const on = Math.min(5, Math.floor(G.lightsT / 0.7)); c.fillStyle = "#0E0F12"; rr(c, CX - 100, 36, 200, 56, 10); for (let k = 0; k < 5; k++) { c.fillStyle = k < on ? "#FF3B30" : "#3A1512"; c.beginPath(); c.arc(CX - 68 + k * 34, 64, 13, 0, 7); c.fill(); } }
+    if (G.goT > 0) { c.fillStyle = "#2BD47D"; c.font = "800 62px " + FONT; c.textAlign = "center"; c.textBaseline = "alphabetic"; c.fillText("XUẤT PHÁT!", CX, 100); }
+    c.restore();
+  }
+  function drawGate(c) {
+    const z = G.gate.z, t = C / z; if (t < 0.02 || t > 1.7) return;
+    const y = YH + t * (H - YH), half = RW * t, s = t, by = y - 150 * s, nl = G.nl, res = G.gate.res;
+    c.fillStyle = "#EDEFF3"; c.fillRect(CX - half - 16 * s, by, 7 * s, y - by); c.fillRect(CX + half + 9 * s, by, 7 * s, y - by);
+    c.fillStyle = "#14171C"; c.fillRect(CX - half - 18 * s, by - 6 * s, 2 * half + 36 * s, 14 * s);
+    const pw = (2 * half / nl) * 0.86, ph = 54 * s;
+    for (let k = 0; k < nl; k++) {
+      const x = CX + laneN(k, nl) * half; let col = LCOL[k], tx = LET[k];
+      if (res) { if (k === G.cur.correct) { col = "#2BD47D"; tx = "✓"; } else if (k === res.chosen) { col = "#FF5B4F"; tx = "✕"; } else col = "#555B69"; }
+      c.fillStyle = col; c.fillRect(x - pw / 2, by + 8 * s, pw, ph);
+      c.fillStyle = "#14171C"; c.font = "800 " + Math.max(6, 40 * s) + "px " + FONT; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(tx, x, by + 8 * s + ph / 2 + 1);
+    }
+  }
+  function drawFinish(c) {
+    const z = G.fin.z;
+    for (let r = 0; r < 2; r++) {
+      const zn = z + 1.5 * r, zf = z + 1.5 * (r + 1); if (zn < C * 0.9) continue;
+      const tn = C / zn, tf = C / zf, yn = YH + (H - YH) * tn, yf = YH + (H - YH) * tf, hn = RW * tn, hf = RW * tf;
+      for (let k = 0; k < 12; k++) { c.fillStyle = (k + r) % 2 ? "#14171C" : "#fff"; const a = -1 + k / 6, b = -1 + (k + 1) / 6; c.beginPath(); c.moveTo(CX + a * hn, yn); c.lineTo(CX + b * hn, yn); c.lineTo(CX + b * hf, yf); c.lineTo(CX + a * hf, yf); c.closePath(); c.fill(); }
+    }
+  }
+  function drawCar(c) {
+    const x = CX + G.px * RW * TOPT, tilt = G.spin > 0 ? Math.sin(G.spin * 16) * 0.6 * G.spin : Math.max(-0.2, Math.min(0.2, (laneN(G.lane, G.nl) - G.px) * 0.35));
+    c.save(); c.translate(x, CARY); c.rotate(tilt); c.scale(0.95, 0.95);
+    c.fillStyle = "rgba(0,0,0,.4)"; c.beginPath(); c.ellipse(0, 2, 38, 7, 0, 0, 7); c.fill();
+    c.fillStyle = "#0F1115"; rr(c, -36, -34, 15, 34, 4); rr(c, 21, -34, 15, 34, 4);
+    c.fillStyle = "#FFC400"; c.beginPath(); c.moveTo(-22, -4); c.lineTo(-15, -42); c.lineTo(15, -42); c.lineTo(22, -4); c.closePath(); c.fill();
+    c.fillStyle = "#14171C"; rr(c, -7, -54, 14, 16, 3); c.fillRect(-32, -58, 64, 8); c.fillRect(-34, -64, 4, 18); c.fillRect(30, -64, 4, 18);
+    c.fillStyle = "#fff"; c.fillRect(-8, -33, 16, 12); c.fillStyle = "#14171C"; c.font = "800 14px " + FONT; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("01", 0, -26);
+    c.fillStyle = "#FF5B4F"; c.fillRect(-5, -9, 10, 4);
+    if (G.v > 28 && !RM) { c.fillStyle = "#FF8A2B"; c.beginPath(); c.moveTo(-6, 0); c.lineTo(6, 0); c.lineTo(0, 16 + Math.random() * 10); c.closePath(); c.fill(); }
+    c.restore();
+  }
+  return { start: start, destroy: destroy };
+})();
+/* ===== Khởi động ===== */
+window.addEventListener("hashchange", () => { const v = $("#view"); if (v) v.focus({ preventScroll: true }); });
+route();
+/* Nút "Tải về" chỉ bật khi trang được cấp quyền; chưa có thì thư viện vẫn dùng được với nút Sao chép. */
+(async () => {
+  try { const c = window.claude && window.claude.use ? await window.claude.use("downloads") : null; if (c) { DL = c; if (cur.v === "thu-vien") render(); } } catch (e) { DL = null; }
+})();
+})();
+</script>
+
+</body></html>

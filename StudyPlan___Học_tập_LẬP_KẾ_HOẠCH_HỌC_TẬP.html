@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyPlan – Học tập khoa học</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fc;--card:#fff;--fg:#17203a;--mut:#525d78;--line:#d3dae9;--grid:#e2e8f5;--ac:#2447d8;--on:#fff;--hl:#ffe14d;--ok:#12805c;--bad:#c2332d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1424;--card:#171e33;--fg:#e8ecf8;--mut:#9ba6c6;--line:#2c3556;--grid:#192040;--ac:#8ea6ff;--on:#0f1424;--hl:#5c4f10;--ok:#4fd1a1;--bad:#ff8a84}}
+:root[data-theme="dark"]{--bg:#0f1424;--card:#171e33;--fg:#e8ecf8;--mut:#9ba6c6;--line:#2c3556;--grid:#192040;--ac:#8ea6ff;--on:#0f1424;--hl:#5c4f10;--ok:#4fd1a1;--bad:#ff8a84}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px);scroll-behavior:smooth}
+*,::before,::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--fg);font:400 17px/1.65 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px solid var(--fg)}
+.w{max-width:920px;margin:0 auto;padding:0 20px}
+nav{display:flex;gap:4px;align-items:center;overflow-x:auto;padding:10px 0}
+nav b{font-weight:800;font-size:20px;margin-right:auto;padding-right:16px;white-space:nowrap}
+nav a,.tabs a{padding:6px 12px;border-radius:6px;color:var(--fg);text-decoration:none;font-weight:600;font-size:15px;white-space:nowrap}
+nav a.on,.tabs a.on{background:var(--hl)}
+.tabs{display:flex;gap:4px;margin-top:20px}
+h1{font-size:clamp(30px,6vw,50px);line-height:1.15;font-weight:800;margin:36px 0 12px}
+h2{font-size:26px;line-height:1.25;margin:40px 0 14px;font-weight:800}
+section h2{font-size:22px;margin:28px 0 8px}
+h3{font-size:19px;margin:0 0 6px}
+.mk{background:linear-gradient(transparent 58%,var(--hl) 58%)}
+.lead{font-size:22px;font-weight:600}.mut{color:var(--mut)}
+.c{display:block;background:var(--card);border:1.5px solid var(--line);border-left:6px solid var(--ac);border-radius:6px;padding:14px 18px;margin:0 0 14px;color:inherit;text-decoration:none}
+a.c:hover{border-color:var(--ac)}
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.g .c{margin:0}
+button,.btn{font:inherit;font-weight:600;background:var(--ac);color:var(--on);border:2px solid var(--ac);border-radius:6px;padding:9px 18px;cursor:pointer;text-decoration:none;display:inline-block;margin:4px 6px 4px 0}
+.s{background:transparent;color:var(--fg);border-color:var(--fg)}
+.lk{background:none;border:0;color:var(--ac);padding:3px 0;margin:0;text-align:left;text-decoration:underline;display:block}
+a{color:var(--ac)}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+summary{cursor:pointer}.c details{margin-top:8px}
+.road{counter-reset:r;list-style:none;padding:0;margin:0 0 0 16px}
+.road li{counter-increment:r;position:relative;padding:8px 0 14px 30px;border-left:3px dashed var(--line)}
+.road li::before{content:counter(r);position:absolute;left:-17px;top:6px;width:32px;height:32px;border-radius:50%;background:var(--ac);color:var(--on);display:grid;place-items:center;font-weight:800}
+.m{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--fg);border-radius:6px;overflow:hidden;margin:12px 0;font-size:15px}
+.m div{padding:10px 12px;background:var(--card);border:1px solid var(--line)}.m b{display:block}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{border:1.5px solid var(--line);padding:10px 8px;text-align:left;font-size:15px}td{height:44px}
+.q label{display:block;padding:8px 12px;border:1.5px solid var(--line);border-radius:6px;margin:8px 0 0;cursor:pointer}
+.q input{margin-right:8px}
+.q label.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,transparent)}
+.q label.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 15%,transparent)}
+.ex{margin-top:10px;font-size:15px;color:var(--mut)}.sc{font-size:24px;font-weight:800}
+footer{border-top:2px solid var(--fg);margin-top:48px;padding:20px 0;color:var(--mut);font-size:14px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head>
+<body>
+<header><div class="w"><nav id="nav"></nav></div></header>
+<main class="w" id="app"></main>
+<footer><div class="w">StudyPlan – Học tập khoa học. Website giáo dục dựa trên tài liệu dự án KDOT dành cho sinh viên.</div></footer>
+<script>
+const $=s=>document.querySelector(s);
+const NAV=[["trang-chu","Trang chủ"],["bai-1","Bài học","Các chương học về lập kế hoạch"],["video-giang-day","Video giảng dạy","Video bài giảng trên Google Drive"],["thuc-hanh","Thực hành","Bài tập và tình huống ứng dụng"],["tai-lieu","Tài liệu","Mẫu kế hoạch và tài liệu tham khảo"],["kiem-tra","Kiểm tra kiến thức","Câu hỏi củng cố sau bài học"],["gioi-thieu","Giới thiệu dự án","Mục tiêu, nội dung và nguồn tham khảo"]];
+const M={swot:`<div class="m"><div><b>Điểm mạnh</b>Việc bạn làm tốt, môn bạn yêu thích</div><div><b>Điểm yếu</b>Thói quen hoặc kiến thức cần cải thiện</div><div><b>Cơ hội</b>Học bổng, câu lạc bộ, thầy cô, tài liệu sẵn có</div><div><b>Thách thức</b>Lịch dày, xao lãng, áp lực thi cử</div></div>`,
+eis:`<div class="m"><div><b>Quan trọng và khẩn cấp</b>Làm ngay: bài sắp nộp, ôn thi sát ngày</div><div><b>Quan trọng, chưa khẩn cấp</b>Lên lịch: tự học, đọc tài liệu, luyện kỹ năng</div><div><b>Khẩn cấp, ít quan trọng</b>Hạn chế hoặc nhờ người khác: tin nhắn, việc vặt</div><div><b>Không quan trọng, không khẩn cấp</b>Bỏ bớt: lướt mạng xã hội vô mục đích</div></div>`};
+const REF=`<ul><li><a href="https://kinhte.donga.edu.vn/chi-tiet-bai-viet/phuong-phap-tu-hoc-hieu-qua-cho-sinh-vien-32514" target="_blank" rel="noopener">Phương pháp tự học hiệu quả cho sinh viên</a> (Đại học Đông Á)</li><li><a href="https://blog.garypercival.com/how-to-use-the-eisenhower-matrix-to-achieve-more-in-your-work/" target="_blank" rel="noopener">How to use the Eisenhower Matrix to achieve more in your work</a> (Gary Percival)</li><li><a href="https://monkey.edu.vn/ba-me-can-biet/giao-duc/tips-hoc-tap/lap-ke-hoach-on-thi-hieu-qua" target="_blank" rel="noopener">Hướng dẫn lập kế hoạch ôn thi hiệu quả trong thời gian ngắn</a> (Monkey)</li><li><a href="https://doi.org/10.1177/1529100612453266" target="_blank" rel="noopener">Dunlosky và cộng sự (2013): Improving Students’ Learning With Effective Learning Techniques</a></li><li><a href="https://doi.org/10.1111/j.1467-9280.2008.02209.x" target="_blank" rel="noopener">Cepeda và cộng sự (2008): Spacing Effects in Learning</a></li><li><a href="https://kops.uni-konstanz.de/handle/123456789/69905" target="_blank" rel="noopener">Sheeran, Listrom và Gollwitzer (2024): phân tích gộp 642 thử nghiệm về kế hoạch nếu–thì</a>; Gollwitzer và Sheeran (2006)</li><li><a href="https://doi.org/10.1037/0003-066X.57.9.705" target="_blank" rel="noopener">Locke và Latham (2002): lý thuyết đặt mục tiêu</a></li><li><a href="https://doi.org/10.1037/0022-3514.67.3.366" target="_blank" rel="noopener">Buehler, Griffin và Ross (1994): Exploring the “planning fallacy”</a></li><li><a href="https://congbaocdn.chinhphu.vn/180507251028987904/2026/7/28/470099-1785226640_v1_1785227002_signed.pdf" target="_blank" rel="noopener">Thông tư 54/2026/TT-BGDĐT (Công báo): định nghĩa tín chỉ</a></li><li><a href="https://doist.com/blog/eisenhower-matrix/" target="_blank" rel="noopener">Doist: nguồn gốc ma trận Eisenhower</a></li><li><a href="https://cwi.edu/news/what-pomodoro-technique-college-students-guide" target="_blank" rel="noopener">College of Western Idaho: Pomodoro cho sinh viên</a></li><li>Tài liệu dự án KDOT: ba buổi học về lập kế hoạch học tập</li></ul>`;
+const L=[
+{t:"Thấu hiểu bản thân và xác định mục tiêu",g:"Hiểu cách mình đang học và đặt được mục tiêu học tập rõ ràng.",s:[
+["Nhận diện thói quen học tập","Ghi lại một tuần học thật của bạn: học lúc nào, bao lâu, ở đâu và hay bị gián đoạn vì điều gì. Thói quen hiện tại là điểm xuất phát của mọi kế hoạch."],
+["Phân tích SWOT cá nhân","SWOT giúp nhìn rõ điểm mạnh, điểm yếu, cơ hội và thách thức của chính bạn trước khi đặt mục tiêu.","swot"],
+["Phương pháp SMART","Mục tiêu tốt cần Cụ thể, Đo lường được, Khả thi, Liên quan và có Thời hạn. Ví dụ: “Đạt 8,0 môn Giải tích cuối kỳ bằng cách làm 3 đề mỗi tuần”."],
+["Vì sao mục tiêu cụ thể hiệu quả hơn","Locke và Latham (2002) tổng hợp 35 năm nghiên cứu và thấy mục tiêu cụ thể, có độ khó vừa đủ thường cho kết quả cao hơn lời tự nhủ “cố gắng hết sức”, miễn là bạn cam kết thực hiện và có phản hồi về tiến độ. Với môn hoàn toàn mới, hãy đặt mục tiêu học hỏi (nắm được 3 dạng bài) trước khi đặt mục tiêu điểm số."],["Phân loại mục tiêu","Chia mục tiêu thành ba nhóm: học tập (điểm số, môn học), kỹ năng (ngoại ngữ, tin học) và ngoại khóa (câu lạc bộ, tình nguyện) để cân đối thời gian."],
+["Thiết lập mục tiêu học tập","Chọn 1–3 mục tiêu cho học kỳ, viết theo SMART, rồi tách thành mục tiêu nhỏ theo tháng và theo tuần."],["Kế hoạch nếu–thì: biến mục tiêu thành hành động","Mục tiêu chưa đủ, bạn cần nói rõ khi nào và ở đâu sẽ làm. Viết theo mẫu “Nếu [tình huống] thì tôi sẽ [hành động]”, ví dụ: “Nếu 19 giờ tối thứ Ba thì tôi sẽ ngồi vào bàn ở thư viện và làm đề Giải tích”. Phân tích gộp 94 thử nghiệm của Gollwitzer và Sheeran (2006) cho thấy cách này giúp đạt mục tiêu ở mức trung bình đến lớn (d = 0,65). Bản cập nhật 2024 (642 thử nghiệm) cho thấy hiệu quả cao hơn khi kế hoạch có dạng nếu–thì, bạn thật sự muốn đạt mục tiêu và nhẩm lại kế hoạch."]]},
+{t:"Quản lý thời gian và sắp xếp ưu tiên",g:"Biết việc nào làm trước, làm trong bao lâu và giữ được sự tập trung.",s:[
+["Tầm quan trọng của quản lý thời gian","Thời gian ở đại học linh hoạt hơn phổ thông, nên nếu không có kế hoạch, việc rất dễ dồn lại vào phút chót."],
+["Tín chỉ và số giờ học thực tế","Theo Thông tư 54/2026/TT-BGDĐT, một tín chỉ tương đương khoảng 45–50 giờ học tập của sinh viên (giờ 60 phút), gồm cả giờ trên lớp, tự học có hướng dẫn, thực hành và kiểm tra, đánh giá. Ví dụ: môn 3 tín chỉ cần 135–150 giờ cả học kỳ; nếu giờ lên lớp ở mức tối thiểu 45 giờ, bạn cần tự bố trí khoảng 90–105 giờ cho tự học, bài tập và ôn kiểm tra. Hãy dùng con số này để dự trù thời gian thay vì đoán."],["Sắp xếp theo mức độ ưu tiên","Xếp việc theo hậu quả nếu không làm và theo thời hạn, thay vì làm việc dễ hoặc việc đến trước."],
+["Ma trận quan trọng – khẩn cấp","Ma trận Eisenhower chia công việc thành bốn nhóm. Dành nhiều thời gian nhất cho nhóm quan trọng nhưng chưa khẩn cấp. Xuất xứ: năm 1954, Tổng thống Eisenhower dẫn lại lời một cựu hiệu trưởng đại học về hai loại vấn đề là “khẩn cấp” và “quan trọng”. Ma trận bốn ô do Stephen Covey phổ biến trong cuốn Bảy thói quen của người thành đạt (1989), và ông nhấn mạnh nhóm quan trọng nhưng chưa khẩn cấp.","eis"],
+["Phương pháp Pomodoro","Học tập trung 25 phút, nghỉ 5 phút; sau 4 vòng thì nghỉ dài 15–30 phút. Mỗi vòng chỉ làm một việc. Phương pháp do Francesco Cirillo nghĩ ra cuối thập niên 1980 khi còn là sinh viên, đặt tên theo chiếc đồng hồ hình quả cà chua. Mốc 25 phút không bắt buộc, bạn có thể thử 20–30 phút cho vừa sức tập trung."],
+["Kiểm soát xao lãng và hạn chế trì hoãn","Để điện thoại xa tầm tay, tắt thông báo, bắt đầu bằng một bước nhỏ 5 phút và đặt giờ bắt đầu cụ thể."],
+["Ngụy biện kế hoạch: vì sao ta luôn ước lượng thiếu","Buehler và cộng sự (1994) hỏi 37 sinh viên tâm lý khi nào xong khóa luận: dự đoán trung bình 33,9 ngày, thực tế 55,5 ngày, chỉ khoảng 30% xong đúng hạn mình dự đoán. Ngay cả ước lượng bi quan nhất (48,6 ngày) vẫn ngắn hơn thực tế. Cách khắc phục: nhớ lại các bài tương tự trước đây đã mất bao lâu rồi cộng thêm thời gian dự phòng."],["Phân bổ thời gian học tập","Chặn khung giờ cố định cho giờ lên lớp, tự học và nghỉ ngơi; chừa khoảng 20% thời gian trống cho việc phát sinh."]]},
+{t:"Theo dõi, đánh giá và điều chỉnh kế hoạch",g:"Biết kế hoạch đang chạy đến đâu và sửa kịp thời khi lệch hướng.",s:[
+["Theo dõi tiến độ học tập","Cuối mỗi ngày đánh dấu việc đã xong; cuối tuần so sánh với mục tiêu của tuần."],
+["Phương pháp tự kiểm tra kiến thức","Gấp sách lại rồi tự nhớ, tự làm câu hỏi hoặc giải thích lại cho người khác để biết mình thật sự hiểu đến đâu."],
+["Ôn tập cách quãng","Ôn lại sau 1 ngày, 3 ngày, 7 ngày rồi 14 ngày. Ôn rải rác nhớ lâu hơn học dồn một lần."],
+["Giãn cách ôn tập theo ngày thi","Cepeda và cộng sự (2008) thấy khoảng cách tối ưu giữa các lần học tăng theo thời gian bạn cần nhớ. Thi sau 1 tuần thì ôn lại sau khoảng 1 ngày; thi sau vài tuần thì giãn cách khoảng 20% thời gian còn lại (thi sau 30 ngày thì ôn lại sau khoảng 6 ngày). Đây là ước lượng từ thí nghiệm, hãy dùng như điểm xuất phát."],["Nên học bằng cách nào: kỹ thuật được nghiên cứu ủng hộ","Dunlosky và cộng sự (2013) đánh giá 10 kỹ thuật học. Hiệu quả cao nhất là tự kiểm tra (làm câu hỏi, thẻ ghi nhớ) và ôn tập giãn cách. Mức vừa: xen kẽ các dạng bài, tự hỏi “vì sao”, tự giải thích. Mức thấp: tô đậm, gạch chân, đọc lại, tóm tắt. Vì vậy hãy xếp vào kế hoạch các buổi tự kiểm tra thay vì chỉ đọc lại."],["Đánh giá kết quả thực hiện kế hoạch","Cuối tuần tự hỏi ba câu: đã làm được gì, chưa làm được gì, tuần sau sẽ đổi điều gì."],
+["Xử lý tình huống chậm tiến độ","Tìm nguyên nhân (quá tải, xao lãng, mục tiêu quá cao), cắt bớt việc ít quan trọng và dồn thời gian cho việc cốt lõi."],
+["Điều chỉnh kế hoạch khi lịch trình thay đổi","Khi có lịch thi, bài nhóm hay việc đột xuất, hãy xếp lại ưu tiên và dời việc linh hoạt thay vì bỏ cả kế hoạch."]]}];
+const P=[
+["Phân tích SWOT","Nhận diện điểm mạnh, yếu, cơ hội, thách thức","Viết ít nhất 2 ý cho mỗi ô SWOT về việc học của bạn, rồi chọn 1 điểm yếu cần cải thiện nhất.","Ví dụ: điểm yếu là hay trì hoãn bài tập lớn; cơ hội là thư viện mở đến 21 giờ."],
+["Mục tiêu SMART","Chuyển mục tiêu chung thành mục tiêu cụ thể","Biến mục tiêu “Em muốn học tiếng Anh tốt hơn” thành một mục tiêu SMART và kiểm tra đủ 5 tiêu chí.","Ví dụ: “Đến hết tháng 12, đạt 6.0 trong bài thi thử IELTS bằng cách học 45 phút mỗi ngày, 5 ngày mỗi tuần.”"],
+["Sắp xếp ưu tiên","Phân loại công việc bằng ma trận Eisenhower","Xếp 6 việc vào ma trận: nộp báo cáo ngày mai, ôn thi sau 2 tuần, trả lời tin nhắn nhóm, xem phim, đọc tài liệu môn mới, sửa laptop.","Báo cáo là quan trọng và khẩn cấp; ôn thi và đọc tài liệu là quan trọng nhưng chưa khẩn cấp; xem phim xếp sau cùng."],
+["Phân bổ thời gian","Xây dựng lịch học trong một tuần","Dùng mẫu kế hoạch tuần để xếp lịch 7 ngày: giờ lên lớp cố định, 2 khung tự học mỗi ngày và 1 buổi nghỉ trọn vẹn.","Chia khung 25 phút học, 5 phút nghỉ và chừa trống ít nhất 20% thời gian."],
+["Điều chỉnh kế hoạch","Xử lý tình huống phát sinh và chậm tiến độ","Sau tuần 1 bạn mới hoàn thành 50% kế hoạch, tuần sau lại có bài nhóm. Hãy đề xuất cách điều chỉnh.","Tìm nguyên nhân, giảm mục tiêu tuần, dời việc ít quan trọng và báo nhóm sớm để chia việc."]];
+const Q=[
+["Mục tiêu nào đạt chuẩn SMART?",["Học tốt hơn","Đạt 7,5 môn Xác suất cuối kỳ bằng cách làm 2 đề mỗi tuần","Học thật nhiều"],1,"Mục tiêu SMART có con số cụ thể, cách thực hiện và thời hạn."],
+["SWOT dùng để làm gì trong lập kế hoạch học tập?",["Tính điểm trung bình","Chia nhỏ thời gian nghỉ","Nhìn rõ điểm mạnh, yếu, cơ hội, thách thức của bản thân"],2,"SWOT giúp hiểu bản thân trước khi đặt mục tiêu."],
+["Việc “quan trọng nhưng chưa khẩn cấp” nên xử lý thế nào?",["Làm ngay lập tức","Bỏ qua","Lên lịch vào khung giờ cố định"],2,"Nhóm này (tự học, ôn thi sớm) cần được lên lịch để không biến thành việc khẩn cấp."],
+["Một vòng Pomodoro tiêu chuẩn gồm?",["25 phút học, 5 phút nghỉ","60 phút học, 10 phút nghỉ","45 phút học, 45 phút nghỉ"],0,"Pomodoro cơ bản là học tập trung 25 phút rồi nghỉ 5 phút."],
+["Lịch ôn tập cách quãng hợp lý là?",["Ôn dồn vào đêm trước khi thi","Ôn sau 1, 3, 7, 14 ngày","Chỉ ôn một lần sau khi học"],1,"Ôn đúng lúc sắp quên giúp nhớ lâu hơn học dồn."],
+["Khi chậm tiến độ, bước đầu tiên nên làm gì?",["Tìm nguyên nhân rồi điều chỉnh việc ưu tiên","Bỏ cả kế hoạch","Học thâu đêm để bù"],0,"Điều chỉnh có cơ sở hiệu quả hơn bỏ cuộc hay học dồn."],
+["Theo nghiên cứu về ngụy biện kế hoạch, cách ước lượng thời gian nào đáng tin hơn?",["Tin rằng lần này sẽ nhanh hơn","Dựa vào thời gian các bài tương tự trước đây và cộng thêm dự phòng","Luôn lấy mốc ngắn nhất có thể"],1,"Sinh viên trong nghiên cứu của Buehler và cộng sự thường làm lâu hơn dự đoán; nhớ lại bài tương tự giúp ước lượng sát thực tế hơn."],
+["Theo Dunlosky và cộng sự (2013), kỹ thuật nào được đánh giá hiệu quả cao?",["Tô đậm và gạch chân","Đọc lại nhiều lần","Tự kiểm tra và ôn tập giãn cách"],2,"Hai kỹ thuật này hiệu quả với nhiều lứa tuổi và nhiều loại bài; tô đậm và đọc lại chỉ được đánh giá thấp."],
+["Kế hoạch “nếu–thì” nào đúng dạng?",["Tôi sẽ cố học nhiều hơn","Nếu 19 giờ tối thứ Ba thì tôi sẽ làm đề ở thư viện","Tôi muốn điểm cao kỳ này"],1,"Kế hoạch nếu–thì nêu rõ tình huống kích hoạt và hành động cụ thể."],
+["Môn 3 tín chỉ tương đương khoảng bao nhiêu giờ học tập cả học kỳ (theo Thông tư 54/2026/TT-BGDĐT)?",["Khoảng 45 giờ, chỉ gồm giờ lên lớp","135–150 giờ, gồm cả tự học và kiểm tra, đánh giá","300 giờ"],1,"Mỗi tín chỉ khoảng 45–50 giờ học tập, gồm giờ trên lớp, tự học có hướng dẫn và kiểm tra, đánh giá."]];
+
+const lesson=n=>{const l=L[n];return `<div class="tabs">${L.map((x,i)=>`<a href="#bai-${i+1}" class="${i==n?"on":""}">Bài 0${i+1}</a>`).join("")}</div><h1><span class="mk">${l.t}</span></h1><p class="lead">${l.g}</p><div class="c"><b>Mục lục</b>${l.s.map((s,i)=>`<button class="lk" onclick="document.getElementById('s${i}').scrollIntoView()">${s[0]}</button>`).join("")}</div>${l.s.map((s,i)=>`<section id="s${i}"><h2>${s[0]}</h2><p>${s[1]}</p>${s[2]?M[s[2]]:""}</section>`).join("")}<hr>${n?`<a class="btn s" href="#bai-${n}">Bài trước</a>`:""}${n<2?`<a class="btn" href="#bai-${n+2}">Bài tiếp theo</a>`:`<a class="btn" href="#thuc-hanh">Sang phần Thực hành</a>`}`};
+const home=()=>`<h1>StudyPlan – Học tập khoa học</h1><p class="lead">Học tập khoa học – Chủ động tương lai</p><p>Khóa học trực tuyến giúp sinh viên đại học, nhất là năm nhất và năm hai, xây dựng phương pháp lập kế hoạch học tập hiệu quả qua ba buổi học: hiểu bản thân, quản lý thời gian và điều chỉnh kế hoạch.</p><a class="btn" href="#bai-1">Bắt đầu Bài 01</a><a class="btn s" href="#gioi-thieu">Xem giới thiệu</a>
+<h2><span class="mk">Sau khóa học, bạn sẽ</span></h2><div class="g">${["Hiểu thói quen học và điểm mạnh, điểm yếu của mình bằng SWOT","Đặt mục tiêu học tập cụ thể theo phương pháp SMART","Sắp xếp ưu tiên và phân bổ thời gian bằng ma trận Eisenhower và Pomodoro","Theo dõi, ôn tập cách quãng và điều chỉnh kế hoạch khi chậm tiến độ"].map(t=>`<div class="c">${t}</div>`).join("")}</div>
+<h2><span class="mk">Lộ trình học</span></h2><ol class="road">${L.map((l,i)=>`<li><a href="#bai-${i+1}">Bài 0${i+1}: ${l.t}</a></li>`).join("")}<li><a href="#thuc-hanh">Làm 5 bài thực hành</a></li><li><a href="#kiem-tra">Kiểm tra kiến thức, xem kết quả và giải thích</a></li></ol>
+<h2><span class="mk">Truy cập nhanh</span></h2><div class="g">${NAV.slice(1).map(([k,t,d])=>`<a class="c" href="#${k}"><b>${t}</b><br><span class="mut">${d}</span></a>`).join("")}</div>`;
+const prac=()=>`<h1><span class="mk">Thực hành</span></h1><p>Năm bài tập ứng dụng. Làm trên giấy hoặc ghi chú, rồi mở gợi ý để đối chiếu. Mẫu phiếu có sẵn trong phần <a href="#tai-lieu">Tài liệu</a>. Website không lưu bài làm của bạn.</p>${P.map((p,i)=>`<div class="c"><h3>Bài ${i+1}. ${p[0]}</h3><p class="mut">${p[1]}</p><p>${p[2]}</p><details><summary>Xem gợi ý</summary><p>${p[3]}</p></details></div>`).join("")}`;
+const dd=(t,d,b)=>`<details class="c"><summary><b>${t}</b>. ${d}</summary>${b}</details>`;
+const docs=()=>`<h1><span class="mk">Tài liệu học tập</span></h1><p>Mẫu và tài liệu đi kèm các bài học. Mở từng mục để xem, rồi chép mẫu sang vở hoặc ứng dụng ghi chú của bạn.</p>`
++dd("Tài liệu SMART","Hướng dẫn xác định mục tiêu",`<ul><li><b>Specific</b>: nói rõ làm gì, ở môn nào.</li><li><b>Measurable</b>: có con số để đo.</li><li><b>Achievable</b>: vừa sức với thời gian và năng lực.</li><li><b>Relevant</b>: gắn với mục tiêu lớn hơn của bạn.</li><li><b>Time-bound</b>: có ngày hoàn thành.</li></ul><p>Mẫu câu: “Tôi sẽ … để đạt … trước ngày …, vì …”.</p>`)
++dd("Phiếu SWOT","Mẫu phân tích bản thân",M.swot+"<p>Ghi 3 ý cho mỗi ô, rồi chọn 1 hành động cải thiện.</p>")
++dd("Ma trận ưu tiên","Mẫu phân loại công việc",M.eis+"<p>Ghi từng việc trong tuần vào đúng ô.</p>")
++dd("Mẫu kế hoạch tuần","Mẫu lập kế hoạch học tập",`<div class="tw"><table><tr><th></th><th>Sáng</th><th>Chiều</th><th>Tối</th></tr>${["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ nhật"].map(d=>`<tr><th>${d}</th><td></td><td></td><td></td></tr>`).join("")}</table></div><p>Cuối tuần ghi: đã làm được gì, chưa làm được gì, tuần sau điều chỉnh gì.</p>`)
++dd("Tài liệu tham khảo","Các nguồn nghiên cứu và tài liệu liên quan",REF);
+const quiz=()=>`<h1><span class="mk">Kiểm tra kiến thức</span></h1><p>${Q.length} câu hỏi củng cố sau ba bài học và phần kiến thức bổ sung. Chọn đáp án rồi bấm Nộp bài để xem điểm và giải thích.</p>${Q.map((q,i)=>`<div class="c q" id="q${i}"><b>Câu ${i+1}. ${q[0]}</b>${q[1].map((o,j)=>`<label><input type="radio" name="q${i}" value="${j}">${o}</label>`).join("")}<div class="ex" hidden></div></div>`).join("")}<button onclick="grade()">Nộp bài</button><button class="s" onclick="route()">Làm lại</button><p id="res" class="sc"></p>`;
+function grade(){let n=0;Q.forEach((q,i)=>{const c=document.querySelector(`input[name=q${i}]:checked`),b=$("#q"+i),e=b.querySelector(".ex"),r=!!c&&+c.value==q[2];b.querySelectorAll("label").forEach((l,j)=>{l.classList.toggle("ok",j==q[2]);l.classList.toggle("no",!!c&&j==+c.value&&!r)});n+=r?1:0;e.hidden=false;e.textContent=(r?"Đúng. ":c?"Sai. ":"Chưa trả lời. ")+q[3]});$("#res").textContent=`Bạn đúng ${n} câu, sai ${Q.length-n} câu (${n}/${Q.length}).`}
+const about=()=>`<h1><span class="mk">Giới thiệu dự án</span></h1><div class="c"><b>Mục tiêu</b><br>Cung cấp kiến thức và hướng dẫn sinh viên xây dựng phương pháp lập kế hoạch học tập hiệu quả.</div><div class="c"><b>Đối tượng</b><br>Sinh viên đại học, đặc biệt là sinh viên năm nhất và năm hai.</div><div class="c"><b>Nội dung</b><br>Ba buổi học theo tài liệu dự án KDOT, kiến thức bổ sung từ các nghiên cứu bên ngoài (có ghi nguồn), năm bài thực hành, bộ câu hỏi kiểm tra và thư viện tài liệu mẫu.</div><div class="c"><b>Phạm vi</b><br>StudyPlan là website giáo dục để đọc bài, thực hành và kiểm tra hiểu bài. Website không có đăng nhập, không lưu kế hoạch cá nhân, không có đồng hồ Pomodoro hay AI lập kế hoạch.</div><div class="c"><b>Nguồn tham khảo</b>${REF}</div>`;
+const VIDEO_URL="https://drive.google.com/drive/folders/1RBDH10LGmcKvMZfca83ub95dunhbGWki?usp=sharing";
+const vid=()=>`<h1><span class="mk">Video giảng dạy</span></h1><p>Các video bài giảng của khóa học được lưu trong thư mục Google Drive. Bấm vào thẻ bên dưới để mở.</p><a class="c" href="${VIDEO_URL}" target="_blank" rel="noopener"><b>Thư mục video giảng dạy</b><br><span class="mut">Mở trên Google Drive (tab mới)</span></a>`;
+function route(){const h=location.hash.slice(1)||"trang-chu",m=h.match(/^bai-([123])$/),f={"video-giang-day":vid,"thuc-hanh":prac,"tai-lieu":docs,"kiem-tra":quiz,"gioi-thieu":about};$("#app").innerHTML=m?lesson(+m[1]-1):(f[h]||home)();$("#nav").innerHTML="<b>StudyPlan</b>"+NAV.map(([k,t])=>`<a href="#${k}"${k==h||m&&k=="bai-1"?' class="on"':""}>${t}</a>`).join("");scrollTo(0,0)}
+addEventListener("hashchange",route);route();
+</script>
+</body></html>
